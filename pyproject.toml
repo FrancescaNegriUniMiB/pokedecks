@@ -1,0 +1,25 @@
+[project]
+name = "pokedecks"
+version = "2.0.0"
+description = "Pokémon TCG price data pipeline"
+readme = "README.md"
+requires-python = "==3.14.3"
+dependencies = [
+    "requests>=2.32.5,<3",
+    "aiohttp>=3.13.2,<4",
+    "selectolax>=0.3.17,<0.4",
+    "pandas",
+    "click",
+    "tqdm",
+    "sqlalchemy>=2.0.0,<3",
+    "matplotlib",
+    "seaborn",
+    "streamlit",
+]
+
+[tool.poetry]
+package-mode = false
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

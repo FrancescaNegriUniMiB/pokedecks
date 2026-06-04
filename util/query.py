@@ -1,8 +1,13 @@
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
-from sqlalchemy import text
+from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
+
+
+def get_engine(database_url: str) -> Engine:
+    '''Create a SQLAlchemy engine for the given database URL.'''
+    return create_engine(database_url, future=True)
 
 
 def load_snapshot(snapshot_date: str, engine: Engine) -> pd.DataFrame:
@@ -103,3 +108,14 @@ def get_set_completion_cost(
         "remaining_cost": remaining_cost,
         "owned_count": len(owned_ids & set(priced["id"])),
     }
+
+
+def load_stored_set_ids(engine: Engine) -> set:
+    '''Return set IDs already present in card_prices (for acquisition update mode).'''
+    with engine.connect() as conn:
+        result = conn.execute(
+            text(
+                "SELECT DISTINCT set_id FROM card_prices WHERE set_id IS NOT NULL"
+            )
+        )
+        return {str(row[0]) for row in result}

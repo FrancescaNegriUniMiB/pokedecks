@@ -2,11 +2,8 @@ from typing import Any, Dict, List, Tuple
 
 import click
 
-from pipeline import import_phase
-
 from .modules import tcgdex
-
-load_stored_set_ids_from_db = import_phase("5_storing.modules.db").load_stored_set_ids_from_db
+from util.query import get_engine, load_stored_set_ids
 
 
 def run_acquisition(
@@ -19,7 +16,7 @@ def run_acquisition(
         return [], []
 
     if mode == "update":
-        stored_set_ids = load_stored_set_ids_from_db(database_url)
+        stored_set_ids = load_stored_set_ids(get_engine(database_url))
         sets_to_fetch = [
             s for s in all_sets if s.get("id") and s["id"] not in stored_set_ids
         ]

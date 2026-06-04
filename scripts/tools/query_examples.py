@@ -10,16 +10,11 @@ if str(ROOT) not in sys.path:
 from sqlalchemy import text
 
 import config
-from pipeline import import_phase
-from util.query import get_set_completion_cost
-
-get_engine = import_phase("5_storing.modules.db").get_engine
-init_table = import_phase("5_storing.modules.db").init_table
+from util.query import get_engine, get_set_completion_cost
 
 
 def run_queries() -> None:
     engine = get_engine(config.DEFAULT_DATABASE_URL)
-    init_table(engine)
 
     print("=" * 60)
     print("PokeDecks Database Query Examples")

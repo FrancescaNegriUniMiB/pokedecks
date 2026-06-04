@@ -6,10 +6,7 @@ import click
 import pandas as pd
 
 import config
-from pipeline import import_phase
-from util.query import load_snapshot
-
-get_engine = import_phase("5_storing.modules.db").get_engine
+from util.query import get_engine, load_snapshot
 
 
 def _pct(n: int, total: int) -> str:

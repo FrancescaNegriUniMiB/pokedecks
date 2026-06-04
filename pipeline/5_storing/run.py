@@ -2,6 +2,7 @@ from datetime import date
 from typing import Any, Dict, List
 
 import click
+from sqlalchemy import create_engine
 
 from .modules import db
 
@@ -21,8 +22,5 @@ def run_storing(
         click.echo("No records to store.", err=True)
         return
 
-    engine = db.get_engine(database_url)
-    if mode == "update":
-        db.write_append(engine, snapshot_date, records)
-    else:
-        db.write_idempotent(engine, snapshot_date, records)
+    engine = create_engine(database_url, future=True)
+    db.write(engine, snapshot_date, records, mode=mode)

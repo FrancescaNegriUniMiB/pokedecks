@@ -80,7 +80,7 @@ pokedecks_2.0/
 │   ├── 5_storing/
 │   ├── 6_quality/
 │   └── 7_analysis/
-├── util/                   # query.py — read card_prices from SQL
+├── util/                   # query.py (engine + reads), user_card_collection.py (RQ4)
 ├── frontend/
 │   ├── analysis_app.py
 │   └── collection_app.py
@@ -229,7 +229,7 @@ poetry run streamlit run frontend/collection_app.py
 
 ## Database schema
 
-Table `**card_prices**`, 21 columns (see `config.SCHEMA_COLUMNS`). Primary key: `(snapshot_date, id)`.
+Table `**card_prices**`, 21 columns (see `config.SCHEMA_COLUMNS`: name → SQLite type). Primary key: `(snapshot_date, id)`.
 
 Additional columns for analysis: `set_release_date`, `illustrator`, `dex_id`.
 
@@ -274,10 +274,7 @@ Written to `data/analysis/{date}/`:
 ## Querying data
 
 ```python
-from pipeline import import_phase
-from util.query import load_snapshot, search_cards, get_set_completion_cost
-
-get_engine = import_phase("5_storing.modules.db").get_engine
+from util.query import get_engine, load_snapshot, search_cards, get_set_completion_cost
 
 engine = get_engine("sqlite:///./data/pokedecks.db")
 df = load_snapshot("2026-05-31", engine)

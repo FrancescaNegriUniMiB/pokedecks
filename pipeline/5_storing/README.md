@@ -24,5 +24,6 @@ Read helpers live in **`util/query.py`** (outside `pipeline/`).
 
 | File | Role |
 |------|------|
-| `db.py` | engine, `card_prices` schema, writes, set-id lookup for acquisition |
-| `collection.py` | `user_collection` table and CRUD (RQ4 frontend) |
+| `db.py` | `write(mode=…)` only — schema + insert into `card_prices` |
+
+RQ4 owned-cards CRUD lives in **`util/user_card_collection.py`** (same SQLite file, driven by the frontend).

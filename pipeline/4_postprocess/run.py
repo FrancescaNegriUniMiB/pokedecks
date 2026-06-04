@@ -15,10 +15,12 @@ _PRICE_COLUMNS = [
 ]
 
 
-def _normalize(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    '''Cast record fields to the expected warehouse types.'''
-    normalized = []
+def run_postprocess(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    '''Normalize field types then keep only valid schema records.'''
+    valid = []
     for record in records:
+        if not record.get("id"):
+            continue
         row = dict(record)
         total = row.get("set_total_cards")
         if total is not None:
@@ -26,20 +28,5 @@ def _normalize(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         for col in _PRICE_COLUMNS:
             val = row.get(col)
             row[col] = float("nan") if val is None else float(val)
-        normalized.append(row)
-    return normalized
-
-
-def _validate(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    '''Keep only records with a valid id and the expected schema columns.'''
-    valid = []
-    for record in records:
-        if not record.get("id"):
-            continue
-        valid.append({col: record.get(col) for col in config.SCHEMA_COLUMNS})
+        valid.append({col: row.get(col) for col in config.SCHEMA_COLUMNS})
     return valid
-
-
-def run_postprocess(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    '''Normalize field types then keep only valid schema records.'''
-    return _validate(_normalize(records))

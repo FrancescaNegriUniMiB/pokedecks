@@ -10,7 +10,7 @@ Normalizes field types and filters records to the warehouse schema before databa
 
 ```
 List[WarehouseRecord]  ──►  run_postprocess  ──►  List[WarehouseRecord]
-                              _normalize → _validate
+                              (single loop: skip invalid id, cast types, project schema)
 ```
 
 ---
@@ -25,10 +25,4 @@ List[WarehouseRecord]  ──►  run_postprocess  ──►  List[WarehouseReco
 | **Output** | `List[Dict[str, Any]]` — normalized, schema-valid records only |
 | **Side effects** | none |
 
-### `_normalize` (internal)
-
-Casts `set_total_cards` to `int` and price columns to `float` (`None` → `NaN`).
-
-### `_validate` (internal)
-
-Drops records without `id`; keeps only keys in `config.SCHEMA_COLUMNS`.
+Per record: skip if no `id`; cast `set_total_cards` to `int` and price columns to `float` (`None` → `NaN`); keep only `config.SCHEMA_COLUMNS`.

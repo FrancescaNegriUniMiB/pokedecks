@@ -7,11 +7,9 @@ import pandas as pd
 
 import config
 from pipeline import import_phase
+from util.query import load_snapshot
 
-_db = import_phase("5_storing.modules.db")
-_query = import_phase("5_storing.modules.query")
-get_engine = _db.get_engine
-load_snapshot = _query.load_snapshot
+get_engine = import_phase("5_storing.modules.db").get_engine
 
 
 def _pct(n: int, total: int) -> str:

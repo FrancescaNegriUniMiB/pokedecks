@@ -5,13 +5,13 @@ from typing import Any, Dict
 import click
 
 from pipeline import import_phase
+from util.query import load_snapshot
 
 from .modules.rq1_value_drivers import run_rq1
 from .modules.rq2_expensive_cards import run_rq2
 from .modules.rq3_set_cost_trend import run_rq3
 
 get_engine = import_phase("5_storing.modules.db").get_engine
-load_snapshot = import_phase("5_storing.modules.query").load_snapshot
 
 
 def run_analysis(

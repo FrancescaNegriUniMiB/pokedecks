@@ -11,12 +11,10 @@ from sqlalchemy import text
 
 import config
 from pipeline import import_phase
+from util.query import get_set_completion_cost
 
-_db = import_phase("5_storing.modules.db")
-_query = import_phase("5_storing.modules.query")
-get_engine = _db.get_engine
-init_table = _db.init_table
-get_set_completion_cost = _query.get_set_completion_cost
+get_engine = import_phase("5_storing.modules.db").get_engine
+init_table = import_phase("5_storing.modules.db").init_table
 
 
 def run_queries() -> None:

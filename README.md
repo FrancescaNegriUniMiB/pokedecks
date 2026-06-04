@@ -31,7 +31,7 @@ RQ1–RQ3 use a **cross-sectional** methodology: all prices reflect the same mar
 | Guideline           | Requirement                                                          | PokeDecks coverage                                                   |
 | ------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | FAQ 5 — Acquisition | ≥2 sources; API or scraping                                          | TCGdex API + PriceCharting/eBay scraping                             |
-| FAQ 6 — Storage     | DBMS + ≥2 queries                                                    | SQLite `card_prices`; `query.py` + `scripts/tools/query_examples.py` |
+| FAQ 6 — Storage     | DBMS + ≥2 queries                                                    | SQLite `card_prices`; `util/query.py` + `scripts/tools/query_examples.py` |
 | FAQ 7 — Integration | ≥2 datasets, automated, error metrics                                | Preprocess + enrichment; `integration_{date}.json`                   |
 | FAQ 9 — Quality     | Before/after integration metrics                                     | `summary_{date}.json` with `before_enrichment` / `after_enrichment`  |
 | Pipeline            | Acquisition → storage → profiling → integration → analysis → quality | All phases in `pipeline/`                                            |
@@ -72,7 +72,7 @@ pokedecks_2.0/
 │       ├── open_report.ps1
 │       └── open_collection.ps1
 ├── config.py
-├── pipeline/
+├── pipeline/               # numbered phases 1–7 only
 │   ├── 1_acquisition/
 │   ├── 2_preprocess/
 │   ├── 3_enrichment/
@@ -80,6 +80,7 @@ pokedecks_2.0/
 │   ├── 5_storing/
 │   ├── 6_quality/
 │   └── 7_analysis/
+├── util/                   # query.py — read card_prices from SQL
 ├── frontend/
 │   ├── analysis_app.py
 │   └── collection_app.py
@@ -274,13 +275,9 @@ Written to `data/analysis/{date}/`:
 
 ```python
 from pipeline import import_phase
+from util.query import load_snapshot, search_cards, get_set_completion_cost
 
-_db = import_phase("5_storing.modules.db")
-_query = import_phase("5_storing.modules.query")
-get_engine = _db.get_engine
-load_snapshot = _query.load_snapshot
-search_cards = _query.search_cards
-get_set_completion_cost = _query.get_set_completion_cost
+get_engine = import_phase("5_storing.modules.db").get_engine
 
 engine = get_engine("sqlite:///./data/pokedecks.db")
 df = load_snapshot("2026-05-31", engine)

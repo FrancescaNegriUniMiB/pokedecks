@@ -1,8 +1,10 @@
-# Storing phase
+# Storing phase (5)
 
-Writes records to the **SQL database** and provides query helpers.
+Writes records to the **SQL database** (pipeline step only).
 
 **Entry point:** `run.py` → `run_storing`
+
+Read helpers live in **`util/query.py`** (outside `pipeline/`).
 
 ---
 
@@ -22,5 +24,5 @@ Writes records to the **SQL database** and provides query helpers.
 
 | File | Role |
 |------|------|
-| `db.py` | schema init, writes, set-id lookup, user collection CRUD |
-| `query.py` | read helpers: `load_snapshot`, `search_cards`, `get_set_completion_cost`, … |
+| `db.py` | engine, `card_prices` schema, writes, set-id lookup for acquisition |
+| `collection.py` | `user_collection` table and CRUD (RQ4 frontend) |

@@ -11,9 +11,9 @@ Research-question analysis on stored snapshots (RQ1–RQ3).
 ## Data flow
 
 ```
-SQL card_prices  ──►  run_analysis  ──►  data/analysis/{date}/*.png + analysis_summary.json
-                                              │
-                                              └──►  frontend/analysis_app.py (viewer)
+SQL card_prices  ──►  util.query.load_snapshot  ──►  run_analysis  ──►  data/analysis/{date}/*.png
+                                                                              │
+                                                                              └──►  frontend/analysis_app.py
 ```
 
 ---

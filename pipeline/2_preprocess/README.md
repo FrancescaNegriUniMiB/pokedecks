@@ -1,15 +1,15 @@
-# Processing phase
+# Preprocess phase (2)
 
 Flattens nested TCGdex JSON into warehouse **records** with API-derived prices and an initial `market_price`.
 
-**Entry point:** `run.py` → `run_processing`
+**Entry point:** `run.py` → `run_preprocess`
 
 ---
 
 ## Data flow
 
 ```
-List[TCGdex detail dict]  ──►  run_processing  ──►  List[WarehouseRecord]
+List[TCGdex detail dict]  ──►  run_preprocess  ──►  List[WarehouseRecord]
          + snapshot_date
 ```
 
@@ -43,7 +43,7 @@ Flat `Dict[str, Any]` with keys from `config.SCHEMA_COLUMNS`. Price enrichment f
 
 ## `run.py`
 
-### `run_processing`
+### `run_preprocess`
 
 | | |
 |---|---|

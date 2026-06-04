@@ -2,8 +2,11 @@ from typing import Any, Dict, List, Tuple
 
 import click
 
-from pipeline.acquisition.modules import tcgdex
-from pipeline.storing.modules.db import load_stored_set_ids_from_db
+from pipeline import import_phase
+
+from .modules import tcgdex
+
+load_stored_set_ids_from_db = import_phase("5_storing.modules.db").load_stored_set_ids_from_db
 
 
 def run_acquisition(

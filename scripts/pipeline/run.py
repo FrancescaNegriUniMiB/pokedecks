@@ -13,18 +13,26 @@ if str(ROOT) not in sys.path:
 import click
 
 import config
-from pipeline.acquisition.run import run_acquisition
-from pipeline.analysis.run import run_analysis
-from pipeline.cleaning.run import run_cleaning
-from pipeline.quality.run import (
-    build_integration_metrics,
-    completeness_from_records,
-    export_integration_metrics,
-    run_quality,
-)
-from pipeline.enrichment.run import run_enrichment
-from pipeline.processing.run import run_processing
-from pipeline.storing.run import run_storing
+from pipeline import import_phase
+
+_run_acquisition = import_phase("1_acquisition.run")
+_run_preprocess = import_phase("2_preprocess.run")
+_run_enrichment = import_phase("3_enrichment.run")
+_run_postprocess = import_phase("4_postprocess.run")
+_run_storing = import_phase("5_storing.run")
+_quality = import_phase("6_quality.run")
+_run_analysis = import_phase("7_analysis.run")
+
+run_acquisition = _run_acquisition.run_acquisition
+run_preprocess = _run_preprocess.run_preprocess
+run_enrichment = _run_enrichment.run_enrichment
+run_postprocess = _run_postprocess.run_postprocess
+run_storing = _run_storing.run_storing
+run_quality = _quality.run_quality
+build_integration_metrics = _quality.build_integration_metrics
+completeness_from_records = _quality.completeness_from_records
+export_integration_metrics = _quality.export_integration_metrics
+run_analysis = _run_analysis.run_analysis
 
 
 def run_pipeline(
@@ -47,22 +55,22 @@ def run_pipeline(
     analysis_path = analysis_dir or Path(config.DEFAULT_ANALYSIS_DIR)
     date_str = snapshot_date.isoformat()
 
-    click.echo(f"\n=== Phase 1/7: acquisition (mode={mode}, date={date_str}) ===")
+    click.echo(f"\n=== Phase 1/7: 1_acquisition (mode={mode}, date={date_str}) ===")
     acquired, failed_ids = run_acquisition(mode, database_url)
 
     if not acquired:
         click.echo("Nothing to process.")
         return
 
-    click.echo("\n=== Phase 2/7: processing ===")
-    records = run_processing(snapshot_date, acquired)
+    click.echo("\n=== Phase 2/7: 2_preprocess ===")
+    records = run_preprocess(snapshot_date, acquired)
     before_enrichment = completeness_from_records(records)
     click.echo(
-        f"Processing: {len(records)} records, "
+        f"Preprocess: {len(records)} records, "
         f"{before_enrichment['market_price_filled_pct']} with market_price (API only)"
     )
 
-    click.echo("\n=== Phase 3/7: enrichment ===")
+    click.echo("\n=== Phase 3/7: 3_enrichment ===")
     records, enriched_pc, enriched_ebay = asyncio.run(run_enrichment(records))
     after_enrichment = completeness_from_records(records)
     integration_metrics = build_integration_metrics(
@@ -81,15 +89,15 @@ def run_pipeline(
         f"{after_enrichment['market_price_filled_pct']} market_price filled"
     )
 
-    click.echo("\n=== Phase 4/7: cleaning ===")
-    cleaned = run_cleaning(records)
-    click.echo(f"Cleaning: {len(cleaned)} records passed validation")
+    click.echo("\n=== Phase 4/7: 4_postprocess ===")
+    cleaned = run_postprocess(records)
+    click.echo(f"Postprocess: {len(cleaned)} records passed validation")
 
-    click.echo("\n=== Phase 5/7: storing ===")
+    click.echo("\n=== Phase 5/7: 5_storing ===")
     run_storing(snapshot_date, database_url, cleaned, failed_ids, mode=mode)
 
     if not skip_quality:
-        click.echo("\n=== Phase 6/7: quality ===")
+        click.echo("\n=== Phase 6/7: 6_quality ===")
         run_quality(
             date_str,
             database_url,
@@ -99,7 +107,7 @@ def run_pipeline(
         )
 
     if not skip_analysis:
-        click.echo("\n=== Phase 7/7: analysis ===")
+        click.echo("\n=== Phase 7/7: 7_analysis ===")
         run_analysis(date_str, database_url, analysis_path)
 
     click.echo(f"\nPipeline complete for snapshot {date_str}.")

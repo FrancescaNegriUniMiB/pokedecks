@@ -1,15 +1,15 @@
-# Cleaning phase
+# Postprocess phase (4)
 
 Normalizes field types and filters records to the warehouse schema before database write.
 
-**Entry point:** `run.py` → `run_cleaning`
+**Entry point:** `run.py` → `run_postprocess`
 
 ---
 
 ## Data flow
 
 ```
-List[WarehouseRecord]  ──►  run_cleaning  ──►  List[WarehouseRecord]
+List[WarehouseRecord]  ──►  run_postprocess  ──►  List[WarehouseRecord]
                               _normalize → _validate
 ```
 
@@ -17,7 +17,7 @@ List[WarehouseRecord]  ──►  run_cleaning  ──►  List[WarehouseRecord]
 
 ## `run.py`
 
-### `run_cleaning`
+### `run_postprocess`
 
 | | |
 |---|---|

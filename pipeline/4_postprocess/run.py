@@ -40,6 +40,6 @@ def _validate(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return valid
 
 
-def run_cleaning(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def run_postprocess(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     '''Normalize field types then keep only valid schema records.'''
     return _validate(_normalize(records))

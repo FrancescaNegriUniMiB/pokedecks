@@ -10,15 +10,20 @@ from sqlalchemy import text
 
 import config
 from frontend.ui import render_exit_button
-from pipeline.storing.modules.db import (
-    add_owned_card,
-    get_engine,
-    get_owned_card_ids,
-    init_collection_table,
-    init_table,
-    remove_owned_card,
-)
-from pipeline.storing.modules.query import get_set_cards, get_set_completion_cost, list_sets
+from pipeline import import_phase
+
+_db = import_phase("5_storing.modules.db")
+_query = import_phase("5_storing.modules.query")
+
+add_owned_card = _db.add_owned_card
+get_engine = _db.get_engine
+get_owned_card_ids = _db.get_owned_card_ids
+init_collection_table = _db.init_collection_table
+init_table = _db.init_table
+remove_owned_card = _db.remove_owned_card
+get_set_cards = _query.get_set_cards
+get_set_completion_cost = _query.get_set_completion_cost
+list_sets = _query.list_sets
 
 
 def list_snapshot_dates(engine) -> list[str]:

@@ -22,7 +22,7 @@ SQL card_prices  ──►  run_quality  ──►  console summary + data/quali
 |----------|------|
 | `run_quality` | Load snapshot, compute metrics, export CSV/JSON, print summary |
 | `completeness_from_records` | Completeness on in-memory pipeline records |
-| `build_integration_metrics` | Integration JSON payload from enrichment counts + failed IDs |
+| `build_integration_metrics` | Integration JSON payload from 3_enrichment counts + failed IDs |
 | `export_integration_metrics` | Writes `integration_{date}.json` |
 
 **Internal helpers:** `_completeness_metrics`, `_validity_metrics`, `_suspicious_sets`, `_top_sets_missing_price`

@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 import click
 
-from pipeline.storing.modules import db
+from .modules import db
 
 
 def run_storing(

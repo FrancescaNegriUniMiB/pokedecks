@@ -1,10 +1,10 @@
 from datetime import date
 from typing import Any, Dict, List
 
-from pipeline.processing.modules.build_record import build_record
+from .modules.build_record import build_record
 
 
-def run_processing(
+def run_preprocess(
         snapshot_date: date,
         acquired: List[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:

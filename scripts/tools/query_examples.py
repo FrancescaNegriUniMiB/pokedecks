@@ -10,8 +10,13 @@ if str(ROOT) not in sys.path:
 from sqlalchemy import text
 
 import config
-from pipeline.storing.modules.query import get_set_completion_cost
-from pipeline.storing.modules.db import get_engine, init_table
+from pipeline import import_phase
+
+_db = import_phase("5_storing.modules.db")
+_query = import_phase("5_storing.modules.query")
+get_engine = _db.get_engine
+init_table = _db.init_table
+get_set_completion_cost = _query.get_set_completion_cost
 
 
 def run_queries() -> None:

@@ -15,7 +15,7 @@ Macro-theme: **Pokémon card prices** in the context of growing collectibles cul
 
 | ID              | Question                                                                                                                                  | Analysis                                                                                           |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **RQ1**         | What makes a card valuable? Age? Rarity? Pokémon depicted? Illustrator?                                                                   | `pipeline/analysis/modules/rq1_value_drivers.py` — boxplots, top Pokémon/illustrators, age scatter |
+| **RQ1**         | What makes a card valuable? Age? Rarity? Pokémon depicted? Illustrator?                                                                   | `pipeline/7_analysis/modules/rq1_value_drivers.py` — boxplots, top Pokémon/illustrators, age scatter |
 | **RQ2**         | How are expensive cards distributed? Are more high-value cards appearing in recent sets (scalper era), or is it still a niche phenomenon? | `rq2_expensive_cards.py` — count/% cards ≥ $50 by set release year                                 |
 | **RQ3**         | Are sets getting more expensive to complete (excluding general inflation)?                                                                | `rq3_set_cost_trend.py` — cross-sectional: avg set completion cost vs release year                 |
 | **RQ4** (extra) | How much does it cost to complete a set?                                                                                                  | `frontend/collection_app.py` — select set, mark owned cards, track remaining cost                  |
@@ -32,10 +32,10 @@ RQ1–RQ3 use a **cross-sectional** methodology: all prices reflect the same mar
 | ------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | FAQ 5 — Acquisition | ≥2 sources; API or scraping                                          | TCGdex API + PriceCharting/eBay scraping                             |
 | FAQ 6 — Storage     | DBMS + ≥2 queries                                                    | SQLite `card_prices`; `query.py` + `scripts/tools/query_examples.py` |
-| FAQ 7 — Integration | ≥2 datasets, automated, error metrics                                | Processing + enrichment; `integration_{date}.json`                   |
+| FAQ 7 — Integration | ≥2 datasets, automated, error metrics                                | Preprocess + enrichment; `integration_{date}.json`                   |
 | FAQ 9 — Quality     | Before/after integration metrics                                     | `summary_{date}.json` with `before_enrichment` / `after_enrichment`  |
 | Pipeline            | Acquisition → storage → profiling → integration → analysis → quality | All phases in `pipeline/`                                            |
-| Analysis            | Answer research questions                                            | `pipeline/analysis/` + Streamlit viewer                              |
+| Analysis            | Answer research questions                                            | `pipeline/7_analysis/` + Streamlit viewer                            |
 
 
 ---
@@ -73,13 +73,13 @@ pokedecks_2.0/
 │       └── open_collection.ps1
 ├── config.py
 ├── pipeline/
-│   ├── acquisition/
-│   ├── processing/
-│   ├── enrichment/
-│   ├── cleaning/
-│   ├── storing/
-│   ├── quality/
-│   └── analysis/
+│   ├── 1_acquisition/
+│   ├── 2_preprocess/
+│   ├── 3_enrichment/
+│   ├── 4_postprocess/
+│   ├── 5_storing/
+│   ├── 6_quality/
+│   └── 7_analysis/
 ├── frontend/
 │   ├── analysis_app.py
 │   └── collection_app.py
@@ -90,7 +90,7 @@ pokedecks_2.0/
 ```
 
 ```
-acquisition → processing → enrichment → cleaning → storing → quality → analysis
+1_acquisition → 2_preprocess → 3_enrichment → 4_postprocess → 5_storing → 6_quality → 7_analysis
 ```
 
 ---
@@ -273,12 +273,14 @@ Written to `data/analysis/{date}/`:
 ## Querying data
 
 ```python
-from pipeline.storing.modules.db import get_engine
-from pipeline.storing.modules.query import (
-    load_snapshot,
-    search_cards,
-    get_set_completion_cost,
-)
+from pipeline import import_phase
+
+_db = import_phase("5_storing.modules.db")
+_query = import_phase("5_storing.modules.query")
+get_engine = _db.get_engine
+load_snapshot = _query.load_snapshot
+search_cards = _query.search_cards
+get_set_completion_cost = _query.get_set_completion_cost
 
 engine = get_engine("sqlite:///./data/pokedecks.db")
 df = load_snapshot("2026-05-31", engine)

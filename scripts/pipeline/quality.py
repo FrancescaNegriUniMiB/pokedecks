@@ -11,7 +11,9 @@ if str(ROOT) not in sys.path:
 import click
 
 import config
-from pipeline.quality.run import run_quality
+from pipeline import import_phase
+
+run_quality = import_phase("6_quality.run").run_quality
 
 
 @click.command()

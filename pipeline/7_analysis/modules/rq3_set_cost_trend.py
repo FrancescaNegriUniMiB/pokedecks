@@ -7,7 +7,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from pipeline.analysis.modules.rq1_value_drivers import _analysis_frame
+from .rq1_value_drivers import _analysis_frame
 
 
 def run_rq3(df: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:

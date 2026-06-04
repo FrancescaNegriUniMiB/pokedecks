@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-'''Benchmark enrichment only, using pre-processing records rebuilt from SQLite.'''
+'''Benchmark enrichment only, using pre-enrichment records rebuilt from SQLite.'''
 
 import asyncio
 import math
@@ -17,8 +17,10 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 import config
-from pipeline.enrichment.run import run_enrichment
-from pipeline.quality.run import completeness_from_records
+from pipeline import import_phase
+
+run_enrichment = import_phase("3_enrichment.run").run_enrichment
+completeness_from_records = import_phase("6_quality.run").completeness_from_records
 
 BASELINE_ENRICHMENT_SEC = 3690.9
 BASELINE_MISSING = 3922

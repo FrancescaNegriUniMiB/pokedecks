@@ -11,7 +11,9 @@ if str(ROOT) not in sys.path:
 import click
 
 import config
-from pipeline.analysis.run import run_analysis
+from pipeline import import_phase
+
+run_analysis = import_phase("7_analysis.run").run_analysis
 
 
 @click.command()

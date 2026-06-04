@@ -77,7 +77,9 @@ mkdir -p data/quality data/analysis
 if [[ -f data/pokedecks.db ]]; then
   SNAPSHOT="$(poetry run python -c "
 from sqlalchemy import text
-from pipeline.storing.modules.db import get_engine
+from pipeline import import_phase
+
+get_engine = import_phase("5_storing.modules.db").get_engine
 e = get_engine('sqlite:///./data/pokedecks.db')
 with e.connect() as c:
     print(c.execute(text('SELECT MAX(snapshot_date) FROM card_prices')).scalar() or '')

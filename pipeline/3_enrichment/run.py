@@ -6,7 +6,7 @@ import click
 from tqdm import tqdm
 
 import config
-from pipeline.enrichment.modules.scrape import fetch_ebay_sold_average, fetch_pricecharting_prices
+from .modules.scrape import fetch_ebay_sold_average, fetch_pricecharting_prices
 
 
 async def run_enrichment(

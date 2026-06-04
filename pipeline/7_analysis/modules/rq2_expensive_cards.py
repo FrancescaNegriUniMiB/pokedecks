@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 import config
-from pipeline.analysis.modules.rq1_value_drivers import _analysis_frame
+from .rq1_value_drivers import _analysis_frame
 
 
 def run_rq2(df: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:

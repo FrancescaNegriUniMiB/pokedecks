@@ -1,6 +1,6 @@
 # Enrichment phase
 
-Scrapes **PriceCharting** and **eBay sold listings** for records where `market_price` is still `None` after processing.
+Scrapes **PriceCharting** and **eBay sold listings** for records where `market_price` is still `None` after preprocess.
 
 **Entry point:** `run.py` → `run_enrichment` (async)
 
@@ -16,7 +16,7 @@ List[WarehouseRecord]  ──►  run_enrichment  ──►  records + (enriched
          └── only rows where market_price is None
 ```
 
-Integration metrics and JSON export live in **quality** (`build_integration_metrics`, `export_integration_metrics`).
+Integration metrics and JSON export live in **6_quality** (`build_integration_metrics`, `export_integration_metrics`).
 
 ---
 

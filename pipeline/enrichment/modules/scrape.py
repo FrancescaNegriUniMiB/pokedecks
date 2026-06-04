@@ -23,16 +23,6 @@ def _parse_price(text: str) -> Optional[float]:
     return None
 
 
-def _cell_price(html: HTMLParser, cell_id: str) -> Optional[float]:
-    '''Read a float price from a PriceCharting cell id.'''
-    node = html.css_first(f"#{cell_id}")
-    if not node:
-        return None
-    price_node = node.css_first(".price")
-    text = price_node.text(strip=True) if price_node else node.text(strip=True)
-    return _parse_price(text)
-
-
 async def _get_html(session: aiohttp.ClientSession, url: str) -> Optional[HTMLParser]:
     '''Fetch and parse HTML with polite delay.'''
     try:
@@ -54,7 +44,15 @@ def _parse_product_prices(product_html: HTMLParser) -> Dict[str, Optional[float]
         "price_graded_avg": None,
     }
 
-    prices["price_ungraded"] = _cell_price(product_html, "ungraded_price")
+    def _from_cell(cell_id: str) -> Optional[float]:
+        node = product_html.css_first(f"#{cell_id}")
+        if not node:
+            return None
+        price_node = node.css_first(".price")
+        text = price_node.text(strip=True) if price_node else node.text(strip=True)
+        return _parse_price(text)
+
+    prices["price_ungraded"] = _from_cell("ungraded_price")
     if not prices["price_ungraded"]:
         for row in product_html.css("table#price_data tr"):
             cells = row.css("td")
@@ -64,11 +62,11 @@ def _parse_product_prices(product_html: HTMLParser) -> Dict[str, Optional[float]
                     prices["price_ungraded"] = extracted
                     break
 
-    prices["price_graded_avg"] = _cell_price(product_html, "graded_price")
+    prices["price_graded_avg"] = _from_cell("graded_price")
 
     manual_title_node = product_html.css_first("td#manual_only_price span.title")
     if manual_title_node and "PSA 10" in manual_title_node.text(strip=True):
-        prices["price_psa10"] = _cell_price(product_html, "manual_only_price")
+        prices["price_psa10"] = _from_cell("manual_only_price")
 
     return prices
 

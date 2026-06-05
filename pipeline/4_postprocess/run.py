@@ -2,31 +2,16 @@ from typing import Any, Dict, List
 
 import config
 
-_PRICE_COLUMNS = [
-    "price_cardmarket_avg",
-    "price_cardmarket_low",
-    "price_cardmarket_trend",
-    "price_tcgplayer_market",
-    "price_tcgplayer_low",
-    "market_price",
-    "price_ungraded",
-    "price_psa10",
-    "price_graded_avg",
-]
-
 
 def run_postprocess(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     '''Normalize field types then keep only valid schema records.'''
+    price_cols = [col for col, sql_type in config.SCHEMA_COLUMNS.items() if sql_type == "REAL"]
     valid = []
     for record in records:
-        if not record.get("id"):
-            continue
         row = dict(record)
-        total = row.get("set_total_cards")
-        if total is not None:
-            row["set_total_cards"] = int(total)
-        for col in _PRICE_COLUMNS:
-            val = row.get(col)
-            row[col] = float("nan") if val is None else float(val)
+        if row.get("set_total_cards") is not None:
+            row["set_total_cards"] = int(row["set_total_cards"])
+        for col in price_cols:
+            row[col] = float("nan") if row.get(col) is None else float(row[col])
         valid.append({col: row.get(col) for col in config.SCHEMA_COLUMNS})
     return valid

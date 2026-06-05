@@ -12,8 +12,6 @@ from .modules.rq2_expensive_cards import run_rq2
 from .modules.rq3_set_cost_trend import run_rq3
 
 _exclusions = import_phase("6_quality.modules.exclusions")
-analysis_frame = _exclusions.analysis_frame
-analysis_excluded_set_ids = _exclusions.analysis_excluded_set_ids
 
 
 def run_analysis(
@@ -31,10 +29,10 @@ def run_analysis(
     run_dir = output_dir / snapshot_date
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    priced = analysis_frame(df)
+    priced = _exclusions.analysis_frame(df)
     summary = {
         "snapshot_date": snapshot_date,
-        "excluded_set_ids": analysis_excluded_set_ids(df),
+        "excluded_set_ids": _exclusions.analysis_excluded_set_ids(df),
         "rq1": run_rq1(priced, run_dir),
         "rq2": run_rq2(priced, run_dir),
         "rq3": run_rq3(priced, run_dir),

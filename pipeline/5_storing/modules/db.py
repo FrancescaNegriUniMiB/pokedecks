@@ -11,7 +11,7 @@ import config
 TABLE_NAME = "card_prices"
 
 
-def init_table(engine: Engine) -> None:
+def _init_table(engine: Engine) -> None:
     '''Create card_prices and add any missing schema columns.'''
     columns_sql = ",\n        ".join(
         f"{col} {sql_type}" for col, sql_type in config.SCHEMA_COLUMNS.items()
@@ -39,7 +39,7 @@ def write(
         mode: str = "full",
     ) -> None:
     '''Write records to card_prices (full: replace snapshot; update: upsert rows).'''
-    init_table(engine)
+    _init_table(engine)
     date_col = snapshot_date.isoformat()
 
     df = pd.DataFrame(rows, columns=list(config.SCHEMA_COLUMNS))

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import sys
-from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -12,6 +11,7 @@ import click
 
 import config
 from pipeline import import_phase
+from util.query import get_engine, get_latest_snapshot_date
 
 run_analysis = import_phase("7_analysis.run").run_analysis
 
@@ -20,8 +20,8 @@ run_analysis = import_phase("7_analysis.run").run_analysis
 @click.option(
     "--date",
     "snapshot_date",
-    default=lambda: date.today().isoformat(),
-    help="Snapshot date to analyze (ISO). Default is today.",
+    default=None,
+    help="Snapshot date to analyze (ISO). Default: latest snapshot in the database.",
 )
 @click.option(
     "--database-url",
@@ -34,8 +34,11 @@ run_analysis = import_phase("7_analysis.run").run_analysis
     type=click.Path(file_okay=False, dir_okay=True, writable=True),
     help="Directory for analysis output files.",
 )
-def main(snapshot_date: str, database_url: str, output_dir: str) -> None:
+def main(snapshot_date: str | None, database_url: str, output_dir: str) -> None:
     '''Run RQ1–RQ3 analysis on a stored snapshot.'''
+    if snapshot_date is None:
+        engine = get_engine(database_url)
+        snapshot_date = get_latest_snapshot_date(engine)
     run_analysis(snapshot_date, database_url, Path(output_dir))
 
 

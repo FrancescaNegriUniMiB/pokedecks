@@ -10,6 +10,14 @@ def get_engine(database_url: str) -> Engine:
     return create_engine(database_url, future=True)
 
 
+def get_latest_snapshot_date(engine: Engine) -> Optional[str]:
+    '''Return the most recent snapshot_date in card_prices, or None if empty.'''
+    with engine.connect() as conn:
+        return conn.execute(
+            text("SELECT MAX(snapshot_date) FROM card_prices")
+        ).scalar()
+
+
 def load_snapshot(snapshot_date: str, engine: Engine) -> pd.DataFrame:
     '''Load all rows for a specific snapshot date from SQL.'''
     query = text(

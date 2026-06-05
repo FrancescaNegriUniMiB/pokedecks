@@ -13,7 +13,7 @@ Entry points for setup, pipeline runs, utilities, and Streamlit launchers.
 
 | Script | Purpose |
 |--------|---------|
-| `pipeline/run.py` | Full pipeline (acquisition → analysis) |
+| `pipeline/run.py` | Full pipeline (acquisition → analysis); also `build_integration_metrics` / `export_integration_metrics` after enrichment |
 | `pipeline/analyze.py` | RQ1–RQ3 analysis only |
 | `pipeline/quality.py` | Quality checks only |
 

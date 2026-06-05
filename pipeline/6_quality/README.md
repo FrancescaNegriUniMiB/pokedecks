@@ -11,7 +11,7 @@ Post-load data quality checks on a stored snapshot.
 ## Data flow
 
 ```
-SQL card_prices  ──►  run_quality  ──►  console summary + data/quality/*.csv/json
+SQL card_prices  ──►  run_quality  ──►  quality_{date}.log + terminal + data/quality/*.csv/json
 ```
 
 ---
@@ -22,16 +22,17 @@ SQL card_prices  ──►  run_quality  ──►  console summary + data/quali
 |--------|------|
 | `modules/metrics.py` | `completeness_metrics`, `validity_metrics` |
 | `modules/exclusions.py` | `suspicious_sets`, `analysis_excluded_set_ids`, `analysis_frame` (used by 7_analysis) |
+| `modules/report.py` | `format_quality_summary` — human-readable log/terminal report |
 
 ## `run.py`
 
 | Function | Role |
 |----------|------|
-| `run_quality` | Load snapshot, compute metrics, export CSV/JSON, print summary |
-| `build_integration_metrics` | Integration JSON payload from 3_enrichment counts + failed IDs |
-| `export_integration_metrics` | Writes `integration_{date}.json` |
+| `run_quality` | Load snapshot, compute metrics, export CSV/JSON/log, echo summary |
 
 **Internal helpers:** `_top_sets_missing_price` (in `run.py`)
+
+Integration metrics (`integration_{date}.json`) are built and exported by `scripts/pipeline/run.py` after enrichment, then passed into `run_quality` as `integration_metrics`.
 
 ### Suspicious set rule
 
@@ -43,5 +44,7 @@ SQL card_prices  ──►  run_quality  ──►  console summary + data/quali
 
 | File | Content |
 |------|---------|
+| `quality_{date}.log` | Human-readable report (same text echoed to terminal) |
 | `missing_market_price_{date}.csv` | Rows with null `market_price` |
 | `summary_{date}.json` | All aggregate metrics (includes `suspicious_sets` records) |
+| `integration_{date}.json` | Written by `scripts/pipeline/run.py` after enrichment; copied into `summary` when present |

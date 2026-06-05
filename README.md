@@ -32,7 +32,7 @@ RQ1–RQ3 use a **cross-sectional** methodology: all prices reflect the same mar
 | ------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | FAQ 5 — Acquisition | ≥2 sources; API or scraping                                          | TCGdex API + PriceCharting/eBay scraping                             |
 | FAQ 6 — Storage     | DBMS + ≥2 queries                                                    | SQLite `card_prices`; `util/query.py` + `scripts/tools/query_examples.py` |
-| FAQ 7 — Integration | ≥2 datasets, automated, error metrics                                | Preprocess + enrichment; `integration_{date}.json`                   |
+| FAQ 7 — Integration | ≥2 datasets, automated, error metrics                                | Preprocess + enrichment; `scripts/pipeline/run.py` → `integration_{date}.json` |
 | FAQ 9 — Quality     | Before/after integration metrics                                     | `summary_{date}.json` with `before_enrichment` / `after_enrichment`  |
 | Pipeline            | Acquisition → storage → profiling → integration → analysis → quality | All phases in `pipeline/`                                            |
 | Analysis            | Answer research questions                                            | `pipeline/7_analysis/` + Streamlit viewer                            |
@@ -244,7 +244,8 @@ Written to `data/quality/` after each run (unless `--skip-quality`):
 
 | File                              | Content                                         |
 | --------------------------------- | ----------------------------------------------- |
-| `integration_{date}.json`         | Enrichment success/failure metrics              |
+| `quality_{date}.log`              | Human-readable quality report (also printed to terminal) |
+| `integration_{date}.json`         | Enrichment success/failure metrics (written by `scripts/pipeline/run.py` after phase 3) |
 | `missing_market_price_{date}.csv` | Cards without `market_price`                    |
 | `summary_{date}.json`             | Completeness, validity, flagged suspicious sets |
 

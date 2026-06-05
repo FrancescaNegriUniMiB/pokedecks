@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 import asyncio
+import json
 import sys
 from datetime import date
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
@@ -30,10 +31,50 @@ run_enrichment = _run_enrichment.run_enrichment
 run_postprocess = _run_postprocess.run_postprocess
 run_storing = _run_storing.run_storing
 run_quality = _quality.run_quality
-build_integration_metrics = _quality.build_integration_metrics
 completeness_metrics = _quality.completeness_metrics
-export_integration_metrics = _quality.export_integration_metrics
 run_analysis = _run_analysis.run_analysis
+
+
+def build_integration_metrics(
+        total_cards: int,
+        missing_before: int,
+        enriched_via_pricecharting: int,
+        enriched_via_ebay: int,
+        still_missing_after: int,
+        acquisition_failed_ids: List[str],
+    ) -> Dict[str, Any]:
+    '''Build integration/enrichment metrics for a pipeline run.'''
+    enriched_total = enriched_via_pricecharting + enriched_via_ebay
+    success_rate = (
+        f"{100 * enriched_total / missing_before:.1f}%"
+        if missing_before
+        else "0.0%"
+    )
+    return {
+        "total_cards": total_cards,
+        "missing_before_enrichment": missing_before,
+        "enriched_via_pricecharting": enriched_via_pricecharting,
+        "enriched_via_ebay": enriched_via_ebay,
+        "enriched_total": enriched_total,
+        "still_missing_after": still_missing_after,
+        "enrichment_success_rate": success_rate,
+        "acquisition_failed_ids": len(acquisition_failed_ids),
+        "acquisition_failed_id_list": acquisition_failed_ids,
+    }
+
+
+def export_integration_metrics(
+        snapshot_date: str,
+        output_dir: Path,
+        metrics: Dict[str, Any],
+    ) -> Path:
+    '''Write integration metrics JSON to the quality output directory.'''
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / f"integration_{snapshot_date}.json"
+    payload = {"snapshot_date": snapshot_date, **metrics}
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+    return path
 
 
 def run_pipeline(

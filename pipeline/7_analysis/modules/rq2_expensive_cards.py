@@ -10,18 +10,9 @@ import pandas as pd
 import config
 
 
-def run_rq2(priced: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:
-    '''Analyze distribution of expensive cards by set release year.'''
-    output_dir.mkdir(parents=True, exist_ok=True)
+def chart_expensive_by_year(priced: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:
+    '''Bar chart of expensive cards (market_price >= threshold) by set release year.'''
     threshold = config.EXPENSIVE_CARD_THRESHOLD
-    summary: Dict[str, Any] = {
-        "expensive_threshold": threshold,
-        "priced_cards_analyzed": len(priced),
-    }
-
-    if priced.empty:
-        return summary
-
     priced = priced.copy()
     priced["release_year"] = pd.to_datetime(priced["set_release_date"]).dt.year
     priced = priced[priced["release_year"].notna()]
@@ -48,15 +39,31 @@ def run_rq2(priced: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:
     recent_cutoff = int(by_year["release_year"].max()) - 5
     recent = by_year[by_year["release_year"] >= recent_cutoff]
     older = by_year[by_year["release_year"] < recent_cutoff]
-    summary["expensive_cards_total"] = int(len(expensive))
-    summary["expensive_cards_pct"] = round(100 * len(expensive) / len(priced), 2)
-    summary["recent_years_expensive_pct_avg"] = (
-        round(float(recent["expensive_pct"].mean()), 2) if len(recent) else None
-    )
-    summary["older_years_expensive_pct_avg"] = (
-        round(float(older["expensive_pct"].mean()), 2) if len(older) else None
-    )
-    summary["by_release_year"] = by_year.to_dict(orient="records")
+    return {
+        "expensive_cards_total": int(len(expensive)),
+        "expensive_cards_pct": round(100 * len(expensive) / len(priced), 2),
+        "recent_years_expensive_pct_avg": (
+            round(float(recent["expensive_pct"].mean()), 2) if len(recent) else None
+        ),
+        "older_years_expensive_pct_avg": (
+            round(float(older["expensive_pct"].mean()), 2) if len(older) else None
+        ),
+        "by_release_year": by_year.to_dict(orient="records"),
+    }
+
+
+def run_rq2(priced: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:
+    '''Run all RQ2 charts and merge their summary metrics.'''
+    output_dir.mkdir(parents=True, exist_ok=True)
+    summary: Dict[str, Any] = {
+        "expensive_threshold": config.EXPENSIVE_CARD_THRESHOLD,
+        "priced_cards_analyzed": len(priced),
+    }
+
+    if priced.empty:
+        return summary
+
+    summary.update(chart_expensive_by_year(priced, output_dir))
     summary["methodology_note"] = (
         "Cross-sectional: compares sets from different release years at the same market snapshot."
     )

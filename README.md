@@ -258,6 +258,8 @@ Trainer kit sets (`tk-*`) often match the quality `suspicious_sets` rule (unifor
 
 ## Analysis output
 
+Chart style (fonts, colors, DPI, figsize) is centralized in `config.py` — section `# ## CHART STYLE CONFIG` at the bottom.
+
 Written to `data/analysis/{date}/`:
 
 

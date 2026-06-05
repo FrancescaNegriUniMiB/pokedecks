@@ -1,11 +1,10 @@
 from pathlib import Path
 from typing import Any, Dict
 
-import matplotlib
-
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import pandas as pd
+
+import config
+from config import new_figure, plt, rotate_xticks, save_chart
 
 
 def chart_set_cost_by_year(priced: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:
@@ -33,18 +32,20 @@ def chart_set_cost_by_year(priced: pd.DataFrame, output_dir: Path) -> Dict[str, 
         .sort_values("release_year")
     )
 
-    plt.figure(figsize=(12, 6))
+    new_figure(wide=True)
     plt.plot(
         by_year["release_year"],
         by_year["avg_set_completion_cost"],
-        marker="o",
+        color=config.CHART_LINE_COLOR,
+        marker=config.CHART_LINE_MARKER,
     )
     plt.xlabel("Set release year")
     plt.ylabel("Average set completion cost ($)")
-    plt.title("RQ3: Average cost to complete a set vs release year")
-    plt.tight_layout()
-    plt.savefig(output_dir / "rq3_set_cost_by_year.png", dpi=120)
-    plt.close()
+    rotate_xticks()
+    save_chart(
+        output_dir / "rq3_set_cost_by_year.png",
+        "RQ3: Average cost to complete a set vs release year",
+    )
 
     summary: Dict[str, Any] = {
         "sets_analyzed": int(len(set_stats)),

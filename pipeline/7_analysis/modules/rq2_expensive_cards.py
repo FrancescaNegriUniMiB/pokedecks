@@ -1,13 +1,10 @@
 from pathlib import Path
 from typing import Any, Dict
 
-import matplotlib
-
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import pandas as pd
 
 import config
+from config import new_figure, plt, rotate_xticks, save_chart
 
 
 def chart_expensive_by_year(priced: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:
@@ -27,14 +24,15 @@ def chart_expensive_by_year(priced: pd.DataFrame, output_dir: Path) -> Dict[str,
         100 * by_year["expensive_cards"] / by_year["total_cards"]
     ).round(2)
 
-    plt.figure(figsize=(12, 6))
-    plt.bar(by_year["release_year"].astype(int), by_year["expensive_cards"])
+    new_figure(wide=True)
+    (
+        by_year.set_index(by_year["release_year"].astype(int))["expensive_cards"]
+        .plot(kind="bar", color=config.CHART_BAR_COLOR)
+    )
     plt.xlabel("Set release year")
     plt.ylabel(f"Cards with market_price >= ${threshold}")
-    plt.title("RQ2: Expensive cards by set release year")
-    plt.tight_layout()
-    plt.savefig(output_dir / "rq2_expensive_by_year.png", dpi=120)
-    plt.close()
+    rotate_xticks()
+    save_chart(output_dir / "rq2_expensive_by_year.png", "RQ2: Expensive cards by set release year")
 
     recent_cutoff = int(by_year["release_year"].max()) - 5
     recent = by_year[by_year["release_year"] >= recent_cutoff]

@@ -1,27 +1,21 @@
 from pathlib import Path
 from typing import Any, Dict
 
-import matplotlib
-
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
 import config
+from config import new_figure, plt, rotate_xticks, save_chart
 
 
 def chart_rarity(priced: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:
     '''Boxplot of market_price by rarity (top 12 rarities by card count).'''
     top_rarities = priced["rarity"].value_counts().head(12).index.tolist()
     rarity_df = priced[priced["rarity"].isin(top_rarities)]
-    plt.figure(figsize=(12, 6))
+    new_figure(wide=True)
     sns.boxplot(data=rarity_df, x="rarity", y="market_price")
-    plt.xticks(rotation=45, ha="right")
-    plt.title("RQ1: Market price by rarity")
-    plt.tight_layout()
-    plt.savefig(output_dir / "rq1_rarity_boxplot.png", dpi=120)
-    plt.close()
+    rotate_xticks()
+    save_chart(output_dir / "rq1_rarity_boxplot.png", "RQ1: Market price by rarity")
     return {
         "rarity_median_prices": (
             priced.groupby("rarity")["market_price"].median().sort_values(ascending=False)
@@ -42,13 +36,13 @@ def chart_pokemon(priced: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:
         .sort_values("mean", ascending=False)
         .head(20)
     )
-    plt.figure(figsize=(10, 6))
-    top_pokemon["mean"].plot(kind="bar")
-    plt.title("RQ1: Top Pokemon by average market price (dex_id, min 5 cards)")
+    new_figure()
+    top_pokemon["mean"].plot(kind="bar", color=config.CHART_BAR_COLOR)
     plt.ylabel("Average market price ($)")
-    plt.tight_layout()
-    plt.savefig(output_dir / "rq1_top_pokemon.png", dpi=120)
-    plt.close()
+    save_chart(
+        output_dir / "rq1_top_pokemon.png",
+        "RQ1: Top Pokemon by average market price (dex_id, min 5 cards)",
+    )
     return {
         "top_pokemon_by_avg_price": {
             str(k): {"avg_price": round(v["mean"], 2), "count": int(v["count"])}
@@ -66,13 +60,13 @@ def chart_illustrators(priced: pd.DataFrame, output_dir: Path) -> Dict[str, Any]
         .sort_values("mean", ascending=False)
         .head(15)
     )
-    plt.figure(figsize=(10, 6))
-    top_ill["mean"].plot(kind="bar")
-    plt.title("RQ1: Top illustrators by average market price (min 5 cards)")
+    new_figure()
+    top_ill["mean"].plot(kind="bar", color=config.CHART_BAR_COLOR)
     plt.ylabel("Average market price ($)")
-    plt.tight_layout()
-    plt.savefig(output_dir / "rq1_top_illustrators.png", dpi=120)
-    plt.close()
+    save_chart(
+        output_dir / "rq1_top_illustrators.png",
+        "RQ1: Top illustrators by average market price (min 5 cards)",
+    )
     return {
         "top_illustrators_by_avg_price": {
             k: {"avg_price": round(v["mean"], 2), "count": int(v["count"])}
@@ -88,14 +82,17 @@ def chart_age(priced: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:
     age = (snapshot - release).dt.days / 365.25
     age_valid = priced[age.notna()].copy()
     age_valid["card_age_years"] = age[age.notna()]
-    plt.figure(figsize=(10, 6))
-    plt.scatter(age_valid["card_age_years"], age_valid["market_price"], alpha=0.2, s=8)
+    new_figure()
+    plt.scatter(
+        age_valid["card_age_years"],
+        age_valid["market_price"],
+        color=config.CHART_SCATTER_COLOR,
+        alpha=config.CHART_SCATTER_ALPHA,
+        s=config.CHART_SCATTER_SIZE,
+    )
     plt.xlabel("Card age (years since set release)")
     plt.ylabel("Market price ($)")
-    plt.title("RQ1: Card age vs market price")
-    plt.tight_layout()
-    plt.savefig(output_dir / "rq1_age_scatter.png", dpi=120)
-    plt.close()
+    save_chart(output_dir / "rq1_age_scatter.png", "RQ1: Card age vs market price")
     corr = age_valid["card_age_years"].corr(age_valid["market_price"])
     return {
         "age_price_correlation": round(float(corr), 4) if pd.notna(corr) else None,

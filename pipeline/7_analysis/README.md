@@ -18,6 +18,14 @@ SQL card_prices  ──►  util.query.load_snapshot  ──►  run_analysis  �
 
 ---
 
+## Chart style
+
+All RQ PNGs read style from `config.py` — section `# ## CHART STYLE CONFIG` at the bottom (`CHART_*` constants + `new_figure`, `save_chart`, `rotate_xticks`).
+
+Edit `CHART_DPI`, `CHART_FIGSIZE_*`, `CHART_FONT_*`, `CHART_SEABORN_*`, `CHART_BAR_COLOR`, `CHART_LINE_*`, `CHART_SCATTER_*` in one place to restyle every analysis chart.
+
+---
+
 ## Modules
 
 | Module | RQ | Output |

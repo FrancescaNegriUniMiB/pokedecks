@@ -246,13 +246,12 @@ Written to `data/quality/` after each run (unless `--skip-quality`):
 | --------------------------------- | ----------------------------------------------- |
 | `integration_{date}.json`         | Enrichment success/failure metrics              |
 | `missing_market_price_{date}.csv` | Cards without `market_price`                    |
-| `suspicious_sets_{date}.csv`      | Sets with uniform high prices                   |
-| `summary_{date}.json`             | Completeness before/after enrichment + validity |
+| `summary_{date}.json`             | Completeness, validity, flagged suspicious sets |
 
 
 ### Quality improvement (case study)
 
-Trainer kit sets (`tk-*`) often appear in `suspicious_sets_*.csv` because PriceCharting matches sealed products, producing uniform high prices. These sets are excluded from price analysis; manual review is recommended before using their prices in reports.
+Trainer kit sets (`tk-*`) often match the quality `suspicious_sets` rule (uniform high prices from sealed-product matching). Analysis exclusions live in `pipeline/6_quality/modules/exclusions.py`; see `excluded_set_ids` in `data/analysis/{date}/analysis_summary.json`.
 
 ---
 

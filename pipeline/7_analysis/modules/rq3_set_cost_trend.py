@@ -7,16 +7,13 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from .rq1_value_drivers import _analysis_frame
 
-
-def run_rq3(df: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:
+def run_rq3(priced: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:
     '''Analyze set completion cost vs set release year (cross-sectional).'''
     output_dir.mkdir(parents=True, exist_ok=True)
-    priced = _analysis_frame(df)
     summary: Dict[str, Any] = {"sets_analyzed": 0}
 
-    if priced.empty or "set_id" not in priced.columns:
+    if priced.empty:
         return summary
 
     set_stats = (
@@ -28,12 +25,8 @@ def run_rq3(df: pd.DataFrame, output_dir: Path) -> Dict[str, Any]:
         )
         .reset_index()
     )
-    set_stats["release_year"] = pd.to_datetime(
-        set_stats["set_release_date"], errors="coerce"
-    ).dt.year
+    set_stats["release_year"] = pd.to_datetime(set_stats["set_release_date"]).dt.year
     set_stats = set_stats[set_stats["release_year"].notna()]
-    if set_stats.empty:
-        return summary
 
     by_year = (
         set_stats.groupby("release_year")

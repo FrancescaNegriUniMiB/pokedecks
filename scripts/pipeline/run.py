@@ -11,6 +11,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import click
+import pandas as pd
 
 import config
 from pipeline import import_phase
@@ -30,7 +31,7 @@ run_postprocess = _run_postprocess.run_postprocess
 run_storing = _run_storing.run_storing
 run_quality = _quality.run_quality
 build_integration_metrics = _quality.build_integration_metrics
-completeness_from_records = _quality.completeness_from_records
+completeness_metrics = _quality.completeness_metrics
 export_integration_metrics = _quality.export_integration_metrics
 run_analysis = _run_analysis.run_analysis
 
@@ -64,7 +65,7 @@ def run_pipeline(
 
     click.echo("\n=== Phase 2/7: 2_preprocess ===")
     records = run_preprocess(snapshot_date, acquired)
-    before_enrichment = completeness_from_records(records)
+    before_enrichment = completeness_metrics(pd.DataFrame(records))
     click.echo(
         f"Preprocess: {len(records)} records, "
         f"{before_enrichment['market_price_filled_pct']} with market_price (API only)"
@@ -72,7 +73,7 @@ def run_pipeline(
 
     click.echo("\n=== Phase 3/7: 3_enrichment ===")
     records, enriched_pc, enriched_ebay = asyncio.run(run_enrichment(records))
-    after_enrichment = completeness_from_records(records)
+    after_enrichment = completeness_metrics(pd.DataFrame(records))
     integration_metrics = build_integration_metrics(
         len(records),
         before_enrichment["market_price_missing"],

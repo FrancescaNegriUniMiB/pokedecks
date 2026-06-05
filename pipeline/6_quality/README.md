@@ -16,16 +16,22 @@ SQL card_prices  ──►  run_quality  ──►  console summary + data/quali
 
 ---
 
+## Modules
+
+| Module | Role |
+|--------|------|
+| `modules/metrics.py` | `completeness_metrics`, `validity_metrics` |
+| `modules/exclusions.py` | `suspicious_sets`, `analysis_excluded_set_ids`, `analysis_frame` (used by 7_analysis) |
+
 ## `run.py`
 
 | Function | Role |
 |----------|------|
 | `run_quality` | Load snapshot, compute metrics, export CSV/JSON, print summary |
-| `completeness_from_records` | Completeness on in-memory pipeline records |
 | `build_integration_metrics` | Integration JSON payload from 3_enrichment counts + failed IDs |
 | `export_integration_metrics` | Writes `integration_{date}.json` |
 
-**Internal helpers:** `_completeness_metrics`, `_validity_metrics`, `_suspicious_sets`, `_top_sets_missing_price`
+**Internal helpers:** `_top_sets_missing_price` (in `run.py`)
 
 ### Suspicious set rule
 
@@ -38,5 +44,4 @@ SQL card_prices  ──►  run_quality  ──►  console summary + data/quali
 | File | Content |
 |------|---------|
 | `missing_market_price_{date}.csv` | Rows with null `market_price` |
-| `suspicious_sets_{date}.csv` | Flagged sets |
-| `summary_{date}.json` | All aggregate metrics |
+| `summary_{date}.json` | All aggregate metrics (includes `suspicious_sets` records) |

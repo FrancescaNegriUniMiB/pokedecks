@@ -17,6 +17,9 @@ SUSPICIOUS_SET_MEAN_THRESHOLD = 50.0
 SUSPICIOUS_SET_STDDEV_THRESHOLD = 0.01
 EXPENSIVE_CARD_THRESHOLD = 100.0
 
+# Set IDs with these prefixes are excluded from RQ analysis (trainer kits, etc.)
+ANALYSIS_EXCLUDED_SET_PREFIXES = ("tk-",)
+
 # card_prices column order and SQLite types (insertion order preserved)
 SCHEMA_COLUMNS = {
     "snapshot_date": "TEXT",

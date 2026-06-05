@@ -10,10 +10,17 @@ Normalizes field types and filters records to the warehouse schema before databa
 
 ```
 List[WarehouseRecord]  ──►  run_postprocess  ──►  List[WarehouseRecord]
-                              (single loop: skip invalid id, cast types, project schema)
+                                    │
+                                    └── modules/normalize.py
 ```
 
 ---
+
+## Modules
+
+| Module | Role |
+|--------|------|
+| `modules/normalize.py` | `normalize_records` — cast types, project `config.SCHEMA_COLUMNS` |
 
 ## `run.py`
 
@@ -22,7 +29,5 @@ List[WarehouseRecord]  ──►  run_postprocess  ──►  List[WarehouseReco
 | | |
 |---|---|
 | **Input** | `records: List[Dict[str, Any]]` — enriched warehouse records |
-| **Output** | `List[Dict[str, Any]]` — normalized, schema-valid records only |
+| **Output** | `List[Dict[str, Any]]` — normalized, schema-valid records |
 | **Side effects** | none |
-
-Per record: skip if no `id`; cast `set_total_cards` to `int` and price columns to `float` (`None` → `NaN`); keep only `config.SCHEMA_COLUMNS`.

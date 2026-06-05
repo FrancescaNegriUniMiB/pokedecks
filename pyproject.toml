@@ -3,7 +3,7 @@ name = "pokedecks"
 version = "2.0.0"
 description = "Pokémon TCG price data pipeline"
 readme = "README.md"
-requires-python = "==3.14.3"
+requires-python = ">=3.14.3,<3.15"
 dependencies = [
     "requests>=2.32.5,<3",
     "aiohttp>=3.13.2,<4",

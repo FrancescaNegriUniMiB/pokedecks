@@ -116,7 +116,7 @@ poetry install
 
 ### Evaluator / professor setup (recommended)
 
-The database and generated reports (`data/*.db`, `data/quality/`, `data/analysis/`) are **not in git**. For evaluation, use the **submission archive** provided with the project (includes pre-built data), or run a quick demo pipeline (see below).
+The `data/` directory (database, quality reports, analysis output) is **not in git**. For evaluation, use the **submission archive** provided with the project (includes pre-built data), or run a quick demo pipeline (see below).
 
 Pick **one** setup script for your operating system:
 
@@ -227,6 +227,36 @@ poetry run streamlit run frontend/collection_app.py
 
 ---
 
+## Cloud snapshot (GitHub Actions)
+
+The `data/` directory is gitignored. Scheduled CI builds publish the latest snapshot as a downloadable artifact.
+
+**Workflow:** [`.github/workflows/update-snapshot.yml`](.github/workflows/update-snapshot.yml) (`Update snapshot`)
+
+**2026 schedule** (08:00 Europe/Rome):
+
+| Date |
+| ---- |
+| 2026-06-09 |
+| 2026-06-16 |
+| 2026-07-08 |
+| 2026-07-15 |
+
+Each run restores the previous `pokedecks-snapshot` artifact (if any), runs the pipeline (`full` on first run, then `update`), and uploads `data/pokedecks.db` plus `data/quality/` and `data/analysis/`.
+
+**Manual run** (GitHub → Actions → Update snapshot → Run workflow): choose `full` or `update`.
+
+**Download locally** (requires [GitHub CLI](https://cli.github.com/)):
+
+```bash
+gh run list --workflow=update-snapshot.yml --limit 5
+gh run download <RUN_ID> -n pokedecks-snapshot -D data
+```
+
+Artifacts are kept for 90 days.
+
+---
+
 ## Database schema
 
 Table `**card_prices**`, 21 columns (see `config.SCHEMA_COLUMNS`: name → SQLite type). Primary key: `(snapshot_date, id)`.
@@ -258,7 +288,7 @@ Trainer kit sets (`tk-*`) often match the quality `suspicious_sets` rule (unifor
 
 ## Analysis output
 
-Chart style (fonts, colors, DPI, figsize) is centralized in `config.py` — section `# ## CHART STYLE CONFIG` at the bottom.
+Chart style (fonts, colors, DPI, figsize) is centralized in `config.py` — section `# CHART STYLE CONFIG` at the bottom.
 
 Written to `data/analysis/{date}/`:
 

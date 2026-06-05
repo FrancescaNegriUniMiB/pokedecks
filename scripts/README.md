@@ -23,6 +23,15 @@ poetry run python scripts/pipeline/analyze.py --date 2026-05-31
 poetry run python scripts/pipeline/quality.py --date 2026-05-31
 ```
 
+## Cloud snapshot (GitHub Actions)
+
+Workflow: `.github/workflows/update-snapshot.yml` — scheduled 2026-06-09, 2026-06-16, 2026-07-08, 2026-07-15 at 08:00 Europe/Rome. First run uses `--mode full`; later runs use `--mode update` with the previous artifact.
+
+```bash
+gh run list --workflow=update-snapshot.yml --limit 5
+gh run download <RUN_ID> -n pokedecks-snapshot -D data
+```
+
 ## Tools
 
 | Script | Purpose |

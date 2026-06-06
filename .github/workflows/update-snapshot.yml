@@ -4,6 +4,8 @@ on:
   schedule:
     # 06:00 UTC = 08:00 CEST; narrowed to Jun/Jul on days 8/9/15/16, then date guard below
     - cron: "0 6 8,9,15,16 6,7 *"
+    # TEST: remove after 2026-06-05 — 18:40 Europe/Rome (16:40 UTC)
+    - cron: "40 16 5 6 *"
   workflow_dispatch:
     inputs:
       mode:
@@ -33,7 +35,7 @@ jobs:
           fi
           TODAY=$(TZ=Europe/Rome date +%Y-%m-%d)
           case "$TODAY" in
-            2026-06-09|2026-06-16|2026-07-08|2026-07-15)
+            2026-06-05|2026-06-09|2026-06-16|2026-07-08|2026-07-15)
               echo "proceed=1" >> "$GITHUB_OUTPUT"
               ;;
             *)

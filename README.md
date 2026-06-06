@@ -227,9 +227,28 @@ poetry run streamlit run frontend/collection_app.py
 
 ---
 
-## Cloud snapshot (GitHub Actions)
+## Cloud snapshot (GitHub)
 
-The `data/` directory is gitignored. Scheduled CI builds publish the latest snapshot as a downloadable artifact.
+The `data/` directory is gitignored. Pre-built snapshots are published on GitHub in two ways:
+
+### GitHub Releases (manual, fastest for cross-platform testing)
+
+After a local pipeline run, publish a release (requires [GitHub CLI](https://cli.github.com/) + `gh auth login`):
+
+```bash
+./scripts/publish-snapshot.sh snapshot-2026-06-05
+```
+
+On another machine (clone the repo, run setup, then download the release):
+
+```bash
+gh release download snapshot-2026-06-05 -p '*.zip' -D .
+unzip pokedecks-snapshot-2026-06-05.zip
+```
+
+Replace the tag/date with the release you need (GitHub → **Releases**).
+
+### GitHub Actions artifact (scheduled CI)
 
 **Workflow:** [`.github/workflows/update-snapshot.yml`](.github/workflows/update-snapshot.yml) (`Update snapshot`)
 
@@ -246,7 +265,7 @@ Each run restores the previous `pokedecks-snapshot` artifact (if any), runs the 
 
 **Manual run** (GitHub → Actions → Update snapshot → Run workflow): choose `full` or `update`.
 
-**Download locally** (requires [GitHub CLI](https://cli.github.com/)):
+**Download artifact** (requires GitHub CLI):
 
 ```bash
 gh run list --workflow=update-snapshot.yml --limit 5

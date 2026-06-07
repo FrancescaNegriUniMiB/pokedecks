@@ -9,6 +9,7 @@ from sqlalchemy.engine import Engine
 import config
 
 TABLE_NAME = "card_prices"
+_SQL_CHUNK_SIZE = 999 // len(config.SCHEMA_COLUMNS)
 
 
 def _init_table(engine: Engine) -> None:
@@ -48,7 +49,10 @@ def write(
     if mode == "update":
         cols = ", ".join(config.SCHEMA_COLUMNS)
         with engine.begin() as conn:
-            df.to_sql("_staging", conn, if_exists="replace", index=False, method="multi")
+            df.to_sql(
+                "_staging", conn, if_exists="replace", index=False,
+                method="multi", chunksize=_SQL_CHUNK_SIZE,
+            )
             conn.execute(text(f"""
                 INSERT OR REPLACE INTO {TABLE_NAME} ({cols})
                 SELECT {cols} FROM _staging
@@ -61,5 +65,8 @@ def write(
                 text(f"DELETE FROM {TABLE_NAME} WHERE snapshot_date = :snapshot_date"),
                 {"snapshot_date": date_col},
             )
-            df.to_sql(TABLE_NAME, conn, if_exists="append", index=False, method="multi")
+            df.to_sql(
+                TABLE_NAME, conn, if_exists="append", index=False,
+                method="multi", chunksize=_SQL_CHUNK_SIZE,
+            )
         click.echo(f"Wrote {len(df)} rows to {TABLE_NAME} ({date_col})")

@@ -1,4 +1,4 @@
-# PokeDecks 2.0
+# PokeDecks
 
 PokeDecks is a Python data pipeline that extracts Pokémon TCG card prices from TCGdex, enriches missing prices via PriceCharting and eBay, stores everything in a **SQL database**, and answers research questions on the Pokémon card market.
 
@@ -55,7 +55,7 @@ RQ1–RQ3 use a **cross-sectional** methodology: all prices reflect the same mar
 ## Repository structure
 
 ```
-pokedecks_2.0/
+pokedecks/
 ├── scripts/
 │   ├── README.md
 │   ├── setup.sh              # one-shot setup (macOS / Linux / Git Bash)
@@ -110,7 +110,7 @@ pokedecks_2.0/
 ### Quick start (developers)
 
 ```bash
-cd pokedecks_2.0
+cd pokedecks
 poetry install
 ```
 

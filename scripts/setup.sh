@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PokeDecks 2.0 — one-shot setup (macOS, Linux, Git Bash on Windows)
+# PokeDecks — one-shot setup (macOS, Linux, Git Bash on Windows)
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

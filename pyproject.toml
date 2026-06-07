@@ -1,6 +1,6 @@
 [project]
 name = "pokedecks"
-version = "2.0.0"
+version = "1.0.0"
 description = "Pokémon TCG price data pipeline"
 readme = "README.md"
 requires-python = ">=3.14.3,<3.15"

@@ -1,4 +1,4 @@
-# PokeDecks 2.0 — one-shot setup (Windows PowerShell)
+# PokeDecks — one-shot setup (Windows PowerShell)
 # Run from project root:  powershell -ExecutionPolicy Bypass -File scripts/setup.ps1
 
 $ErrorActionPreference = "Stop"

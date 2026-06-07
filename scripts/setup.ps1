@@ -66,7 +66,7 @@ if (Test-Path "data/pokedecks.db") {
 
 Next steps (pick one):
 
-  A) Submission archive: extract the provided zip with data/pokedecks.db, then:
+  A) Pre-built archive: extract the snapshot with data/pokedecks.db, then:
        powershell -ExecutionPolicy Bypass -File scripts/app/open_report.ps1
 
   B) Quick demo (~5–15 min):

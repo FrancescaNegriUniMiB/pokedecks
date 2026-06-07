@@ -36,7 +36,7 @@ gh run download <RUN_ID> -n pokedecks-snapshot -D data
 
 | Script | Purpose |
 |--------|---------|
-| `tools/query_examples.py` | SQL demo queries (FAQ 6) |
+| `tools/query_examples.py` | SQL demo queries |
 
 ## Apps (Streamlit)
 

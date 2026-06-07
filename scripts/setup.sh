@@ -20,7 +20,7 @@ install_poetry() {
   fi
   info "Poetry not found — installing via official installer..."
   if ! command -v python3 >/dev/null 2>&1; then
-    fail "python3 is required to install Poetry. Install Python 3.14 first (see README → Evaluator setup)."
+    fail "python3 is required to install Poetry. Install Python 3.14 first (see README → Recommended setup)."
   fi
   curl -sSL https://install.python-poetry.org | python3 -
   export PATH="${HOME}/.local/bin:${PATH}"
@@ -89,7 +89,7 @@ else
 
 Next steps (pick one):
 
-  A) Submission archive: extract the provided zip so that data/pokedecks.db
+  A) Pre-built archive: extract the snapshot so that data/pokedecks.db
      and data/analysis/ are present, then run:
        ./scripts/app/open_report.sh
 

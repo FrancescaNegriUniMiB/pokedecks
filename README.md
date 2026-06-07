@@ -25,17 +25,17 @@ RQ1–RQ3 use a **cross-sectional** methodology: all prices reflect the same mar
 
 ---
 
-## Exam compliance (Data Management)
+## Data pipeline overview
 
 
-| Guideline           | Requirement                                                          | PokeDecks coverage                                                   |
-| ------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| FAQ 5 — Acquisition | ≥2 sources; API or scraping                                          | TCGdex API + PriceCharting/eBay scraping                             |
-| FAQ 6 — Storage     | DBMS + ≥2 queries                                                    | SQLite `card_prices`; `util/query.py` + `scripts/tools/query_examples.py` |
-| FAQ 7 — Integration | ≥2 datasets, automated, error metrics                                | Preprocess + enrichment; `scripts/pipeline/run.py` → `integration_{date}.json` |
-| FAQ 9 — Quality     | Before/after integration metrics                                     | `summary_{date}.json` with `before_enrichment` / `after_enrichment`  |
-| Pipeline            | Acquisition → storage → profiling → integration → analysis → quality | All phases in `pipeline/`                                            |
-| Analysis            | Answer research questions                                            | `pipeline/7_analysis/` + Streamlit viewer                            |
+| Area         | Capability                                      | Implementation                                                             |
+| ------------ | ----------------------------------------------- | -------------------------------------------------------------------------- |
+| Acquisition  | Multiple sources (API + scraping)               | TCGdex API + PriceCharting/eBay scraping                                   |
+| Storage      | Relational DBMS with queryable snapshots        | SQLite `card_prices`; `util/query.py` + `scripts/tools/query_examples.py` |
+| Integration  | Automated merge with success/error metrics      | Preprocess + enrichment; `scripts/pipeline/run.py` → `integration_{date}.json` |
+| Quality      | Before/after enrichment comparison              | `summary_{date}.json` with `before_enrichment` / `after_enrichment`        |
+| Pipeline     | End-to-end phased workflow                      | Acquisition → storage → profiling → integration → analysis → quality in `pipeline/` |
+| Analysis     | Research questions with charts and summaries      | `pipeline/7_analysis/` + Streamlit viewer                                  |
 
 
 ---
@@ -114,9 +114,9 @@ cd pokedecks
 poetry install
 ```
 
-### Evaluator / professor setup (recommended)
+### Recommended setup
 
-The `data/` directory (database, quality reports, analysis output) is **not in git**. For evaluation, use the **submission archive** provided with the project (includes pre-built data), or run a quick demo pipeline (see below).
+The `data/` directory (database, quality reports, analysis output) is **not in git**. Use a **pre-built snapshot** (GitHub Release or downloaded archive) or run the pipeline locally (see below).
 
 Pick **one** setup script for your operating system:
 
@@ -152,8 +152,8 @@ Opens Streamlit at **[http://localhost:8501](http://localhost:8501)** (browser o
 
 | Option                 | Time          | Command                                                           |
 | ---------------------- | ------------- | ----------------------------------------------------------------- |
-| **A — Submission zip** | instant       | Extract archive so `data/pokedecks.db` and `data/analysis/` exist |
-| **B — Quick demo**     | not supported | use `--mode update` after a partial run, or submission archive    |
+| **A — Pre-built archive** | instant       | Extract snapshot so `data/pokedecks.db` and `data/analysis/` exist |
+| **B — Quick demo**          | not supported | use `--mode update` after a partial run, or a pre-built archive  |
 | **C — Full dataset**   | ~1h 15min     | `poetry run python scripts/pipeline/run.py --mode full`           |
 
 
@@ -172,7 +172,7 @@ Then re-run the setup script for your OS.
 #### Other CLI checks (optional)
 
 ```bash
-poetry run python scripts/tools/query_examples.py          # SQL demo queries (FAQ 6)
+poetry run python scripts/tools/query_examples.py          # SQL demo queries
 poetry run python scripts/pipeline/quality.py --date 2026-05-31
 poetry run python scripts/pipeline/analyze.py --date 2026-05-31
 ```
@@ -215,7 +215,7 @@ poetry run python scripts/pipeline/run.py --mode full
 # Analysis only on existing snapshot
 poetry run python scripts/pipeline/analyze.py --date 2026-05-31
 
-# Query demos (FAQ 6)
+# Query demos
 poetry run python scripts/tools/query_examples.py
 
 # Streamlit: analysis charts
@@ -336,4 +336,4 @@ cost = get_set_completion_cost("swsh4.5", "2026-05-31", engine)
 
 ## License
 
-Personal project — Data Management exam project.
+Personal project.

@@ -1,8 +1,8 @@
 {
   "latex-workshop.latex.tools": [
     {
-      "name": "latexmk",
-      "command": "latexmk",
+      "name": "latexmk-poetry",
+      "command": "${workspaceFolder}/scripts/latex/latexmk.sh",
       "args": [
         "-synctex=1",
         "-interaction=nonstopmode",
@@ -10,15 +10,45 @@
         "-pdf",
         "-shell-escape",
         "%DOC%"
-      ]
+      ],
+      "env": {}
     }
   ],
   "latex-workshop.latex.recipes": [
     {
-      "name": "latexmk (pdflatex + shell-escape)",
-      "tools": ["latexmk"]
+      "name": "latexmk (pdflatex + shell-escape + pygments)",
+      "tools": ["latexmk-poetry"]
     }
   ],
+  "latex-workshop.latex.recipe.default": "latexmk (pdflatex + shell-escape + pygments)",
   "latex-workshop.view.pdf.viewer": "tab",
-  "latex-workshop.latex.autoBuild.run": "onSave"
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latex.clean.fileTypes": [
+    "*.aux",
+    "*.bbl",
+    "*.blg",
+    "*.idx",
+    "*.ind",
+    "*.lof",
+    "*.lot",
+    "*.out",
+    "*.toc",
+    "*.acn",
+    "*.acr",
+    "*.alg",
+    "*.glg",
+    "*.glo",
+    "*.gls",
+    "*.fls",
+    "*.log",
+    "*.fdb_latexmk",
+    "*.snm",
+    "*.synctex(busy)",
+    "*.synctex.gz",
+    "*.nav",
+    "*.vrb",
+    "*.bcf",
+    "*.run.xml",
+    "_minted/**"
+  ]
 }

@@ -1,5 +1,6 @@
 name: Update snapshot
 
+
 on:
   schedule:
     # 06:00 UTC = 08:00 CEST; narrowed to Jun/Jul on days 8/9/15/16, then date guard below

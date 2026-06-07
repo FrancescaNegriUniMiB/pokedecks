@@ -3,3 +3,9 @@ __pycache__/
 *.pyc
 .DS_Store
 data/
+
+# LaTeX (Rho-class) — setup locale, non versionato
+report/
+scripts/setup-latex.sh
+scripts/latex/
+.vscode/settings.json

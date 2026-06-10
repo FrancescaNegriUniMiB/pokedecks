@@ -30,7 +30,9 @@ def list_snapshot_dates(engine) -> list[str]:
 st.set_page_config(page_title="PokeDecks Collection", layout="wide")
 render_exit_button()
 st.title("PokeDecks — Set Completion (RQ4)")
-st.caption("Select a set and mark owned cards to track remaining completion cost.")
+st.caption(
+    "Mark owned cards once per username; the snapshot date only selects which market prices to use."
+)
 
 engine = get_engine(config.DEFAULT_DATABASE_URL)
 init_collection_table(engine)
@@ -54,7 +56,7 @@ set_labels = {
 selected_label = st.selectbox("Set", list(set_labels.keys()))
 set_id = set_labels[selected_label]
 
-owned_ids = get_owned_card_ids(username, snapshot_date, engine)
+owned_ids = get_owned_card_ids(username, engine)
 cost = get_set_completion_cost(set_id, snapshot_date, engine, list(owned_ids))
 
 col1, col2, col3, col4 = st.columns(4)
@@ -75,11 +77,11 @@ for row in cards.itertuples():
     checked = st.checkbox(
         f"{row.name} ({row.set_number}) — {price_label}",
         value=owned,
-        key=f"{username}:{snapshot_date}:{row.id}",
+        key=f"{username}:{row.id}",
     )
     if checked and not owned:
-        add_owned_card(username, row.id, snapshot_date, engine)
+        add_owned_card(username, row.id, engine)
         owned_ids.add(row.id)
     elif not checked and owned:
-        remove_owned_card(username, row.id, snapshot_date, engine)
+        remove_owned_card(username, row.id, engine)
         owned_ids.discard(row.id)

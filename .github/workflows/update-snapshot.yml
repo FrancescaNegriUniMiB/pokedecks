@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: write
   actions: read
 
 jobs:
@@ -111,3 +111,19 @@ jobs:
             data/pokedecks.db
             data/quality/
             data/analysis/
+
+      - name: Publish GitHub Release
+        if: steps.guard.outputs.proceed == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="snapshot-$(TZ=Europe/Rome date +%F)"
+          ZIP="/tmp/pokedecks-${TAG}.zip"
+          zip -r "$ZIP" data/pokedecks.db data/quality data/analysis
+          if gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ZIP" --repo "${{ github.repository }}" --clobber
+          else
+            gh release create "$TAG" "$ZIP" --repo "${{ github.repository }}" \
+              --title "PokeDecks snapshot ${TAG#snapshot-}" \
+              --notes "Automated snapshot from the Update snapshot workflow."
+          fi

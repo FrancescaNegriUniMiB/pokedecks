@@ -30,7 +30,7 @@ poetry run python scripts/pipeline/quality.py --date 2026-05-31
 | macOS / Linux | `./scripts/download_snapshots.sh` |
 | Windows | `powershell -ExecutionPolicy Bypass -File scripts/download_snapshots.ps1` |
 
-Fetches the last 3 GitHub Releases into `data/` (no `gh` required). See `tools/download_snapshots.py` for options.
+Fetches the last 3 GitHub Releases into `data/` (no `gh` required). CI also publishes a release on each successful snapshot run. See `tools/download_snapshots.py` for options.
 
 ## Cloud snapshot (GitHub Actions)
 

@@ -214,7 +214,7 @@ poetry run streamlit run frontend/collection_app.py
 
 ## Cloud snapshot (GitHub)
 
-The `data/` directory is gitignored. Pre-built snapshots are published on GitHub in two ways.
+The `data/` directory is gitignored. Pre-built snapshots are published on GitHub as **Releases** (and as CI artifacts for 90 days).
 
 ### Download snapshots (recommended)
 
@@ -233,15 +233,15 @@ poetry run python scripts/tools/download_snapshots.py --source artifacts   # nee
 poetry run python scripts/tools/download_snapshots.py --repo FrancescaNegriUniMiB/pokedecks
 ```
 
-### GitHub Releases (manual publish)
+### GitHub Releases
 
-After a local pipeline run, publish a release (requires [GitHub CLI](https://cli.github.com/) + `gh auth login`):
+Each successful **Update snapshot** workflow run publishes a release tagged `snapshot-YYYY-MM-DD` (Europe/Rome date).
+
+To publish manually after a local pipeline run:
 
 ```bash
 ./scripts/publish-snapshot.sh snapshot-2026-06-05
 ```
-
-Users can also download a single release from GitHub → **Releases**, or use `download_snapshots.py` above.
 
 ### GitHub Actions artifact (scheduled CI)
 
@@ -256,7 +256,7 @@ Users can also download a single release from GitHub → **Releases**, or use `d
 | 2026-07-08 |
 | 2026-07-15 |
 
-Each run restores the previous `pokedecks-snapshot` artifact (if any), runs the pipeline (`full` on first run, then `update`), and uploads `data/pokedecks.db` plus `data/quality/` and `data/analysis/`.
+Each run restores the previous `pokedecks-snapshot` artifact (if any), runs the pipeline (`full` on first run, then `update`), uploads `data/pokedecks.db` plus `data/quality/` and `data/analysis/`, and publishes a matching GitHub Release.
 
 **Manual run** (GitHub → Actions → Update snapshot → Run workflow): choose `full` or `update`.
 

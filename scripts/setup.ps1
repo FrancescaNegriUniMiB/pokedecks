@@ -39,8 +39,17 @@ function Refresh-PythonPath {
 }
 
 function Test-Python([string]$exe, [string[]]$prefix = @()) {
+    if ($exe -match '[/\\]') {
+        if (-not (Test-Path -LiteralPath $exe)) { return $null }
+    } elseif (-not (Get-Command $exe -ErrorAction SilentlyContinue)) {
+        return $null
+    }
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
     & $exe @prefix -c "import sys; raise SystemExit(0 if sys.version_info[:3]==(3,14,3) else 1)" 2>$null | Out-Null
-    if ($LASTEXITCODE -ne 0) { return $null }
+    $ok = $LASTEXITCODE -eq 0
+    $ErrorActionPreference = $prev
+    if (-not $ok) { return $null }
     return @{ pyCmd = $exe; pyArgs = $prefix }
 }
 

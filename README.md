@@ -230,7 +230,7 @@ Defaults: last **3** releases merged into `data/` (`pokedecks.db` + `quality/` +
 ```bash
 poetry run python scripts/tools/download_snapshots.py --limit 3
 poetry run python scripts/tools/download_snapshots.py --source artifacts   # needs gh
-poetry run python scripts/tools/download_snapshots.py --repo owner/pokedecks
+poetry run python scripts/tools/download_snapshots.py --repo FrancescaNegriUniMiB/pokedecks
 ```
 
 ### GitHub Releases (manual publish)

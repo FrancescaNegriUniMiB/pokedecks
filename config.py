@@ -5,8 +5,8 @@ API_RETRY_BACKOFF_SEC = 2.0
 MAX_CONCURRENT_REQUESTS = 5
 ENRICHMENT_CONCURRENCY = 8
 
-USER_AGENT = "Pokedecks/0.1 (+https://github.com/fnegri/pokedecks)"
-GITHUB_REPO = "fnegri/pokedecks"
+USER_AGENT = "Pokedecks/0.1 (+https://github.com/FrancescaNegriUniMiB/pokedecks)"
+GITHUB_REPO = "FrancescaNegriUniMiB/pokedecks"
 PRICECHARTING_BASE = "https://www.pricecharting.com"
 EBAY_SEARCH_URL = "https://www.ebay.com/sch/i.html"
 

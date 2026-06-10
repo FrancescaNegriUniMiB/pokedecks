@@ -6,9 +6,34 @@ The reference market is **English**.
 
 Every run fetches card data from TCGdex from scratch (`full`) or only new sets (`update`). There is no file cache.
 
+## Contents
+
+- [Research questions](#research-questions)
+- [Architecture](#architecture)
+- [Data pipeline overview](#data-pipeline-overview)
+- [Repository structure](#repository-structure)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick start (developers)](#quick-start-developers)
+- [Recommended setup](#recommended-setup)
+- [Usage](#usage)
+- [Expected runtimes](#expected-runtimes)
+- [Examples](#examples)
+- [Cloud snapshot (GitHub)](#cloud-snapshot-github)
+- [Download snapshots (recommended)](#download-snapshots-recommended)
+- [GitHub Releases](#github-releases)
+- [GitHub Actions artifact (scheduled CI)](#github-actions-artifact-scheduled-ci)
+- [Database schema](#database-schema)
+- [Quality reports](#quality-reports)
+- [Quality improvement (case study)](#quality-improvement-case-study)
+- [Analysis output](#analysis-output)
+- [Querying data](#querying-data)
+- [SQLite CLI](#sqlite-cli)
+- [License](#license)
+
 ---
 
-## Research questions
+## <a id="research-questions"></a>Research questions
 
 Macro-theme: **Pokémon card prices** in the context of growing collectibles culture and scalping among young collectors.
 
@@ -24,8 +49,9 @@ Macro-theme: **Pokémon card prices** in the context of growing collectibles cul
 RQ1–RQ3 use a **cross-sectional** methodology: all prices reflect the same market snapshot. release year is used as a proxy for “era”, not CPI-adjusted time series.
 
 ---
+## <a id="architecture"></a>Architecture
 
-## Data pipeline overview
+### <a id="data-pipeline-overview"></a>Data pipeline overview
 
 
 | Area         | Capability                                      | Implementation                                                             |
@@ -39,7 +65,7 @@ RQ1–RQ3 use a **cross-sectional** methodology: all prices reflect the same mar
 
 ---
 
-## Repository structure
+### <a id="repository-structure"></a>Repository structure
 
 ```
 pokedecks/
@@ -83,7 +109,7 @@ pokedecks/
 
 ---
 
-## Requirements
+### <a id="requirements"></a>Requirements
 
 - Python **3.14.3** (see setup scripts below — pyenv not required)
 - Poetry **≥ 2.0** (installed automatically by setup scripts)
@@ -92,28 +118,26 @@ pokedecks/
 
 ---
 
-## Installation
+## <a id="installation"></a>Installation
 
-### Quick start (developers)
+### <a id="quick-start-developers"></a>Quick start (developers)
 
+You need to have already installed **Python >=3.14.3** and **Poetry >=2.4.1**
 ```bash
 cd pokedecks
 poetry install
 ```
 
-### Recommended setup
+### <a id="recommended-setup"></a>Recommended setup
 
 Pick **one** setup script for your operating system.
 
-```bash
-cd pokedecks
-```
-Then:
+In Root dir:
 
 | OS                       | Command                                                      |
 | ------------------------ | ------------------------------------------------------------ |
 | **macOS / Linux**        | `chmod +x scripts/setup.sh && ./scripts/setup.sh`            |
-| **Windows (PowerShell)** | `powershell -ExecutionPolicy Bypass -File scripts/setup.ps1` (quote the path if the folder name contains spaces) |
+| **Windows (PowerShell)** | `powershell -ExecutionPolicy Bypass -File scripts/setup.ps1` |
 | **Windows (Git Bash)**   | same as macOS/Linux                                          |
 
 
@@ -143,7 +167,7 @@ Opens Streamlit at **[http://localhost:8501](http://localhost:8501)** (browser o
 
 | Option                 | Time          | Command                                                           |
 | ---------------------- | ------------- | ----------------------------------------------------------------- |
-| **A — Download snapshots** | instant       | `./scripts/download_snapshots.sh` or `download_snapshots.ps1` on Windows |
+| **A — Download snapshots** | instant       | `./scripts/download_snapshots.sh` or `download_snapshots.ps1` on Windows (see section below) |
 | **B — Quick demo**          | not supported | use `--mode update` after a partial run, or a pre-built archive  |
 | **C — Full dataset**   | ~1h 15min     | `poetry run python scripts/pipeline/run.py --mode full`           |
 
@@ -170,7 +194,7 @@ poetry run python scripts/pipeline/analyze.py --date YYYY-MM-DD
 
 ---
 
-## Usage
+## <a id="usage"></a>Usage
 
 ```bash
 poetry run python scripts/pipeline/run.py [OPTIONS]
@@ -182,7 +206,7 @@ poetry run python scripts/pipeline/run.py [OPTIONS]
 | `--date`          | `today`                         | Date stamped on records (ISO)              |
 
 
-### Expected runtimes
+### <a id="expected-runtimes"></a>Expected runtimes
 
 
 | Scenario                            | Approximate time                  |
@@ -191,7 +215,7 @@ poetry run python scripts/pipeline/run.py [OPTIONS]
 | `--mode update` (new sets only)     | minutes, proportional to new sets |
 
 
-### Examples
+### <a id="examples"></a>Examples
 
 ```bash
 # Full pipeline (quality + analysis at end)
@@ -212,11 +236,11 @@ poetry run streamlit run frontend/collection_app.py
 
 ---
 
-## Cloud snapshot (GitHub)
+## <a id="cloud-snapshot-github"></a>Cloud snapshot (GitHub)
 
 The `data/` directory is gitignored. Pre-built snapshots are published on GitHub as **Releases** (and as CI artifacts for 90 days).
 
-### Download snapshots (recommended)
+### <a id="download-snapshots-recommended"></a>Download snapshots (recommended)
 
 After setup, fetch the latest pre-built data from GitHub (using the public Releases API):
 
@@ -233,7 +257,7 @@ poetry run python scripts/tools/download_snapshots.py --source artifacts   # nee
 poetry run python scripts/tools/download_snapshots.py --repo FrancescaNegriUniMiB/pokedecks
 ```
 
-### GitHub Releases
+### <a id="github-releases"></a>GitHub Releases
 
 Each successful **Update snapshot** workflow run publishes a release tagged `snapshot-YYYY-MM-DD` (Europe/Rome date).
 
@@ -243,7 +267,7 @@ To publish manually after a local pipeline run:
 ./scripts/publish-snapshot.sh snapshot-2026-06-05
 ```
 
-### GitHub Actions artifact (scheduled CI)
+### <a id="github-actions-artifact-scheduled-ci"></a>GitHub Actions artifact (scheduled CI)
 
 **Workflow:** [`.github/workflows/update-snapshot.yml`](.github/workflows/update-snapshot.yml) (`Update snapshot`)
 
@@ -271,7 +295,7 @@ Artifacts are kept for 90 days. Each CI run is cumulative: the latest artifact u
 
 ---
 
-## Database schema
+## <a id="database-schema"></a>Database schema
 
 Table `**card_prices**`, 21 columns (see `config.SCHEMA_COLUMNS`: name → SQLite type). Primary key: `(snapshot_date, id)`.
 
@@ -281,7 +305,7 @@ Table `**user_collection**` for RQ4: `(username, card_id)`. Ownership is snapsho
 
 ---
 
-## Quality reports
+## <a id="quality-reports"></a>Quality reports
 
 Written to `data/quality/` after each run (unless `--skip-quality`):
 
@@ -294,13 +318,13 @@ Written to `data/quality/` after each run (unless `--skip-quality`):
 | `summary_{date}.json`             | Completeness, validity, flagged suspicious sets |
 
 
-### Quality improvement (case study)
+### <a id="quality-improvement-case-study"></a>Quality improvement (case study)
 
 Trainer kit sets (`tk-*`) often match the quality `suspicious_sets` rule (uniform high prices from sealed-product matching). Analysis exclusions live in `pipeline/6_quality/modules/exclusions.py`. see `excluded_set_ids` in `data/analysis/{date}/analysis_summary.json`.
 
 ---
 
-## Analysis output
+## <a id="analysis-output"></a>Analysis output
 
 Chart style (fonts, colors, DPI, figsize) is centralized in `config.py` — section `# CHART STYLE CONFIG` at the bottom.
 
@@ -317,7 +341,7 @@ Written to `data/analysis/{date}/`:
 
 ---
 
-## Querying data
+## <a id="querying-data"></a>Querying data
 
 ```python
 from util.query import get_engine, load_snapshot, search_cards, get_set_completion_cost
@@ -327,8 +351,66 @@ df = load_snapshot("2026-05-31", engine)
 cost = get_set_completion_cost("swsh4.5", "2026-05-31", engine)
 ```
 
+Demo queries from the shell:
+
+```bash
+poetry run python scripts/tools/query_examples.py
+```
+
+### <a id="sqlite-cli"></a>SQLite CLI
+
+Database path: `data/pokedecks.db` (after setup or `download_snapshots`).
+
+| OS | Install `sqlite3` |
+| --- | --- |
+| **Windows** | `winget install SQLite.SQLite` — then reopen PowerShell |
+| **macOS** | usually preinstalled; otherwise `brew install sqlite` |
+| **Linux** | `sudo apt install sqlite3` |
+
+Open the database:
+
+```bash
+sqlite3 data/pokedecks.db
+```
+
+Example session:
+
+```sql
+.tables
+SELECT DISTINCT snapshot_date FROM card_prices ORDER BY snapshot_date DESC;
+
+-- Top 5 most expensive cards (latest snapshot)
+SELECT market_price, name, set_name, id
+FROM card_prices
+WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM card_prices)
+  AND market_price IS NOT NULL
+ORDER BY market_price DESC
+LIMIT 5;
+
+-- Top 5 sets by completion cost (sum of priced cards, latest snapshot)
+SELECT set_name, ROUND(SUM(market_price), 2) AS total_cost, COUNT(*) AS priced_cards
+FROM card_prices
+WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM card_prices)
+  AND market_price IS NOT NULL
+  AND set_id IS NOT NULL
+GROUP BY set_id, set_name
+ORDER BY total_cost DESC
+LIMIT 5;
+
+.quit
+```
+
+**Windows without `sqlite3`:** use Python from the project environment:
+
+```powershell
+poetry run python -c "import sqlite3; c=sqlite3.connect('data/pokedecks.db'); print(c.execute('SELECT DISTINCT snapshot_date FROM card_prices ORDER BY 1 DESC').fetchall())"
+```
+
+GUI alternative: [DB Browser for SQLite](https://sqlitebrowser.org/) (`winget install DBBrowserForSQLite.DBBrowserForSQLite` on Windows).
+
 ---
 
-## License
+## <a id="license"></a>License
 
-Personal project.
+Personal project for university made entirely by Francesca Negri.
+But you gonna admit it's very cool for a university project.

@@ -89,14 +89,10 @@ else
 
 Next steps (pick one):
 
-  A) Pre-built archive: extract the snapshot so that data/pokedecks.db
-     and data/analysis/ are present, then run:
-       ./scripts/app/open_report.sh
+  A) Download pre-built snapshots:
+       ./scripts/download_snapshots.sh
 
-  B) Quick demo (~5–15 min, small sample):
-       poetry run python scripts/pipeline/run.py --mode full
-
-  C) Full dataset (~1h 15min):
+  B) Full dataset (~1h 15min):
        poetry run python scripts/pipeline/run.py --mode full
 
 EOF

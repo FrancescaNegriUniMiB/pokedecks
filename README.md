@@ -143,7 +143,7 @@ Opens Streamlit at **[http://localhost:8501](http://localhost:8501)** (browser o
 
 | Option                 | Time          | Command                                                           |
 | ---------------------- | ------------- | ----------------------------------------------------------------- |
-| **A — Pre-built archive** | instant       | Extract snapshot so `data/pokedecks.db` and `data/analysis/` exist |
+| **A — Download snapshots** | instant       | `./scripts/download_snapshots.sh` or `download_snapshots.ps1` on Windows |
 | **B — Quick demo**          | not supported | use `--mode update` after a partial run, or a pre-built archive  |
 | **C — Full dataset**   | ~1h 15min     | `poetry run python scripts/pipeline/run.py --mode full`           |
 
@@ -214,9 +214,26 @@ poetry run streamlit run frontend/collection_app.py
 
 ## Cloud snapshot (GitHub)
 
-The `data/` directory is gitignored. Pre-built snapshots are published on GitHub in two ways:
+The `data/` directory is gitignored. Pre-built snapshots are published on GitHub in two ways.
 
-### GitHub Releases (manual, fastest for cross-platform testing)
+### Download snapshots (recommended)
+
+After setup, fetch the latest pre-built data from GitHub (using the public Releases API):
+
+| OS | Command |
+| --- | --- |
+| macOS / Linux | `./scripts/download_snapshots.sh` |
+| Windows | `powershell -ExecutionPolicy Bypass -File scripts/download_snapshots.ps1` |
+
+Defaults: last **3** releases merged into `data/` (`pokedecks.db` + `quality/` + `analysis/`).
+
+```bash
+poetry run python scripts/tools/download_snapshots.py --limit 3
+poetry run python scripts/tools/download_snapshots.py --source artifacts   # needs gh
+poetry run python scripts/tools/download_snapshots.py --repo owner/pokedecks
+```
+
+### GitHub Releases (manual publish)
 
 After a local pipeline run, publish a release (requires [GitHub CLI](https://cli.github.com/) + `gh auth login`):
 
@@ -224,14 +241,7 @@ After a local pipeline run, publish a release (requires [GitHub CLI](https://cli
 ./scripts/publish-snapshot.sh snapshot-2026-06-05
 ```
 
-On another machine (clone the repo, run setup, then download the release):
-
-```bash
-gh release download snapshot-2026-06-05 -p '*.zip' -D .
-unzip pokedecks-snapshot-2026-06-05.zip
-```
-
-Replace the tag/date with the release you need (GitHub → **Releases**).
+Users can also download a single release from GitHub → **Releases**, or use `download_snapshots.py` above.
 
 ### GitHub Actions artifact (scheduled CI)
 
@@ -250,14 +260,14 @@ Each run restores the previous `pokedecks-snapshot` artifact (if any), runs the 
 
 **Manual run** (GitHub → Actions → Update snapshot → Run workflow): choose `full` or `update`.
 
-**Download artifact** (requires GitHub CLI):
+**Download artifact** (requires GitHub CLI, or `download_snapshots.py --source artifacts`):
 
 ```bash
 gh run list --workflow=update-snapshot.yml --limit 5
 gh run download <RUN_ID> -n pokedecks-snapshot -D data
 ```
 
-Artifacts are kept for 90 days.
+Artifacts are kept for 90 days. Each CI run is cumulative: the latest artifact usually contains every `snapshot_date` collected so far.
 
 ---
 

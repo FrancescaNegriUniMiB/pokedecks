@@ -119,7 +119,7 @@ Then:
 
 What the setup script does:
 
-1. Ensures **Python 3.14**: on **Windows**, installs it automatically via `winget` if missing. On **macOS / Linux**, uses pyenv when available, otherwise prints manual install hints
+1. Ensures **Python 3.14.3** — on **Windows**, installs it automatically via `winget` if missing; on **macOS / Linux**, uses pyenv when available, otherwise prints manual install hints
 2. Installs **Poetry** if missing (official installer)
 3. Runs `poetry install`
 4. Verifies all core dependencies import correctly
@@ -155,7 +155,7 @@ Opens Streamlit at **[http://localhost:8501](http://localhost:8501)** (browser o
 | ------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | macOS         | `brew install python@3.14` or [pyenv](https://github.com/pyenv/pyenv) + `pyenv install 3.14.3`                            |
 | Ubuntu/Debian | `sudo add-apt-repository ppa:deadsnakes/ppa && sudo apt install python3.14 python3.14-venv`                               |
-| Windows       | `winget install Python.Python.3.14` or [python.org downloads](https://www.python.org/downloads/) — enable **Add to PATH** |
+| Windows       | `winget install Python.Python.3.14 --version 3.14.3 -e` or [python.org 3.14.3](https://www.python.org/downloads/release/python-3143/) — enable **Add to PATH** |
 
 
 Then re-run the setup script for your OS.

@@ -7,7 +7,6 @@ function Warn($msg) { Write-Host "WARNING: $msg" -ForegroundColor Yellow }
 function Fail($msg) { Write-Host "ERROR: $msg" -ForegroundColor Red; exit 1 }
 
 $RequiredPythonVersion = "3.14.3"
-$versionCheck = 'import sys; print(".".join(map(str, sys.version_info[:3])))'
 
 function Add-ToPath([string]$dir) {
     if ($dir -and (Test-Path -LiteralPath $dir) -and ($env:Path -notlike "*$dir*")) {
@@ -38,28 +37,26 @@ function Refresh-PythonPath {
 }
 
 function Test-Python([string]$exe, [string[]]$prefix = @()) {
-    try {
-        $ver = (& $exe @prefix -c $versionCheck 2>$null | Select-Object -First 1).ToString().Trim()
-        if ($ver -eq $RequiredPythonVersion) {
-            return @{ pyCmd = $exe; pyArgs = $prefix }
-        }
-    } catch {}
-    return $null
+    & $exe @prefix -c "import sys; raise SystemExit(0 if sys.version_info[:3]==(3,14,3) else 1)" 2>$null | Out-Null
+    if ($LASTEXITCODE -ne 0) { return $null }
+    return @{ pyCmd = $exe; pyArgs = $prefix }
 }
 
 function Find-Python {
     Refresh-PythonPath
+    foreach ($base in @($env:LOCALAPPDATA, $env:ProgramFiles)) {
+        $exe = Join-Path $base "Programs\Python\Python314\python.exe"
+        if (-not (Test-Path -LiteralPath $exe)) { continue }
+        $found = Test-Python $exe @()
+        if ($found) { return $found }
+    }
     foreach ($c in @(
-        @{ exe = "py"; prefix = @("-3.14") },
         @{ exe = "python3.14"; prefix = @() },
-        @{ exe = "python"; prefix = @() }
+        @{ exe = "python"; prefix = @() },
+        @{ exe = "py"; prefix = @("-3.14") }
     )) {
         $found = Test-Python $c.exe $c.prefix
         if ($found) { return $found }
-    }
-    $localPy = Join-Path $env:LOCALAPPDATA "Programs\Python\Python314\python.exe"
-    if (Test-Path -LiteralPath $localPy) {
-        return Test-Python $localPy @()
     }
     return $null
 }
@@ -71,10 +68,6 @@ function Install-Python {
     Info "Installing Python $RequiredPythonVersion..."
     & winget install --id Python.Python.3.14 -e --version $RequiredPythonVersion --accept-package-agreements --accept-source-agreements
     Refresh-PythonPath
-    if (Get-Command py -ErrorAction SilentlyContinue) {
-        & py install $RequiredPythonVersion -y | Out-Null
-        Refresh-PythonPath
-    }
 }
 
 $python = Find-Python

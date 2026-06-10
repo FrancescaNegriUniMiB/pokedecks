@@ -7,6 +7,8 @@ function Warn($msg) { Write-Host "WARNING: $msg" -ForegroundColor Yellow }
 function Fail($msg) { Write-Host "ERROR: $msg" -ForegroundColor Red; exit 1 }
 
 $RequiredPythonVersion = "3.14.3"
+$PoetryScripts = Join-Path $env:APPDATA "Python\Scripts"
+$PoetryExe = Join-Path $PoetryScripts "poetry.exe"
 
 function Add-ToPath([string]$dir) {
     if ($dir -and (Test-Path -LiteralPath $dir) -and ($env:Path -notlike "*$dir*")) {
@@ -61,6 +63,15 @@ function Find-Python {
     return $null
 }
 
+function Add-PoetryToUserPath {
+    Add-ToPath $PoetryScripts
+    $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+    if (-not $userPath) { $userPath = "" }
+    if ($userPath -notlike "*$PoetryScripts*") {
+        [Environment]::SetEnvironmentVariable("Path", "$userPath;$PoetryScripts", "User")
+    }
+}
+
 function Install-Python {
     if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
         Fail "Python $RequiredPythonVersion not found and winget unavailable."
@@ -77,21 +88,25 @@ if (-not $python) {
 }
 if (-not $python) { Fail "Python $RequiredPythonVersion not found. Restart PowerShell and re-run setup.ps1." }
 
-if (-not (Get-Command poetry -ErrorAction SilentlyContinue)) {
+if (-not (Test-Path -LiteralPath $PoetryExe)) {
     Info "Installing Poetry..."
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $installer = (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content
     $installer | & $python.pyCmd @($python.pyArgs) -
-    Add-ToPath (Join-Path $env:APPDATA "Python\Scripts")
-    if (-not (Get-Command poetry -ErrorAction SilentlyContinue)) { Fail "Poetry install failed." }
+    if (-not (Test-Path -LiteralPath $PoetryExe)) { Fail "Poetry install failed." }
 }
+Add-PoetryToUserPath
 
-& poetry env use $(if ($python.pyArgs.Count) { $RequiredPythonVersion } else { $python.pyCmd }) 2>$null
-& poetry install
-if ($LASTEXITCODE -ne 0) { Fail "poetry install failed" }
-
-& poetry run python -c "import matplotlib, seaborn, streamlit, pandas, sqlalchemy, aiohttp, selectolax"
-if ($LASTEXITCODE -ne 0) { Fail "Dependency check failed" }
+$prevEap = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+& $PoetryExe env use $(if ($python.pyArgs.Count) { $RequiredPythonVersion } else { $python.pyCmd }) 2>$null
+& $PoetryExe install
+$poetryExit = $LASTEXITCODE
+& $PoetryExe run python -c "import matplotlib, seaborn, streamlit, pandas, sqlalchemy, aiohttp, selectolax"
+$depsExit = $LASTEXITCODE
+$ErrorActionPreference = $prevEap
+if ($poetryExit -ne 0) { Fail "poetry install failed" }
+if ($depsExit -ne 0) { Fail "Dependency check failed" }
 
 New-Item -ItemType Directory -Force -Path data, data/quality, data/analysis | Out-Null
 

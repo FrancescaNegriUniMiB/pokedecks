@@ -16,7 +16,7 @@ List[WarehouseRecord]  ──►  run_enrichment  ──►  records + (enriched
          └── only rows where market_price is None
 ```
 
-After enrichment, **`scripts/pipeline/run.py`** builds integration metrics (`build_integration_metrics`) and writes `integration_{date}.json` (`export_integration_metrics`) before calling `6_quality`.
+After enrichment, **`scripts/pipeline/run.py`** builds integration metrics (`build_integration_metrics`) and writes `integration_{date}.json`.
 
 ---
 

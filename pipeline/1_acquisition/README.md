@@ -21,8 +21,8 @@ Downloads card data from **TCGdex**.
 run_acquisition
   └─ fetch_set_list()              GET /sets
   └─ fetch_set_details(sets)
-       ├─ bar 1 "Sets"             GET /sets/{id} per set, postfix: indexed cards + overall %
-       └─ bar 2 "Cards"            parallel GET /cards/{id}, postfix: ok/failed + overall %
+       ├─ bar 1 "Sets"             GET /sets/{id} per set %
+       └─ bar 2 "Cards"            parallel GET /cards/{id}%
 ```
 
 ---

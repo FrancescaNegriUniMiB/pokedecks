@@ -18,10 +18,10 @@ Macro-theme: **Pokémon card prices** in the context of growing collectibles cul
 | **RQ1**         | What makes a card valuable? Age? Rarity? Pokémon depicted? Illustrator?                                                                   | `pipeline/7_analysis/modules/rq1_value_drivers.py` — boxplots, top Pokémon/illustrators, age scatter |
 | **RQ2**         | How are expensive cards distributed? Are more high-value cards appearing in recent sets (scalper era), or is it still a niche phenomenon? | `rq2_expensive_cards.py` — count/% cards ≥ $50 by set release year                                 |
 | **RQ3**         | Are sets getting more expensive to complete (excluding general inflation)?                                                                | `rq3_set_cost_trend.py` — cross-sectional: avg set completion cost vs release year                 |
-| **RQ4** (extra) | How much does it cost to complete a set?                                                                                                  | `frontend/collection_app.py` — select set, mark owned cards, track remaining cost                  |
+| **RQ4** (extra) | How much does it cost to complete a set?                                                                                                  | `frontend/collection_app.py` — mark owned cards per user. Snapshot selects prices only             |
 
 
-RQ1–RQ3 use a **cross-sectional** methodology: all prices reflect the same market snapshot; release year is used as a proxy for “era”, not CPI-adjusted time series.
+RQ1–RQ3 use a **cross-sectional** methodology: all prices reflect the same market snapshot. release year is used as a proxy for “era”, not CPI-adjusted time series.
 
 ---
 
@@ -31,24 +31,11 @@ RQ1–RQ3 use a **cross-sectional** methodology: all prices reflect the same mar
 | Area         | Capability                                      | Implementation                                                             |
 | ------------ | ----------------------------------------------- | -------------------------------------------------------------------------- |
 | Acquisition  | Multiple sources (API + scraping)               | TCGdex API + PriceCharting/eBay scraping                                   |
-| Storage      | Relational DBMS with queryable snapshots        | SQLite `card_prices`; `util/query.py` + `scripts/tools/query_examples.py` |
-| Integration  | Automated merge with success/error metrics      | Preprocess + enrichment; `scripts/pipeline/run.py` → `integration_{date}.json` |
+| Integration  | Automated merge with success/error metrics      | Preprocess + enrichment. `scripts/pipeline/run.py` → `integration_{date}.json` |
+| Storage      | Relational DBMS with queryable snapshots        | SQLite `card_prices`. `util/query.py` + `scripts/tools/query_examples.py` |
 | Quality      | Before/after enrichment comparison              | `summary_{date}.json` with `before_enrichment` / `after_enrichment`        |
-| Pipeline     | End-to-end phased workflow                      | Acquisition → storage → profiling → integration → analysis → quality in `pipeline/` |
 | Analysis     | Research questions with charts and summaries      | `pipeline/7_analysis/` + Streamlit viewer                                  |
 
-
----
-
-## Key features
-
-- **Multiple sources** — TCGdex as the primary source; automatic PriceCharting → eBay enrichment only where `market_price` is null.
-- **Price coverage** — Cardmarket from the TCGdex API; `market_price = max(cardmarket_avg, tcgplayer_market)`; scrape fallback via PriceCharting/eBay.
-- **Two run modes** — `full`: all cards; `update`: only sets not yet in the database.
-- **SQL storage** — table `card_prices`, primary key `(snapshot_date, id)`.
-- **Quality reports** — post-load checks with before/after enrichment comparison.
-- **Analysis phase** — automated RQ1–RQ3 charts and JSON summary.
-- **Streamlit apps** — analysis viewer + set completion tracker (RQ4).
 
 ---
 
@@ -116,27 +103,32 @@ poetry install
 
 ### Recommended setup
 
-The `data/` directory (database, quality reports, analysis output) is **not in git**. Use a **pre-built snapshot** (GitHub Release or downloaded archive) or run the pipeline locally (see below).
+Pick **one** setup script for your operating system.
 
-Pick **one** setup script for your operating system:
-
+```bash
+cd pokedecks
+```
+Then:
 
 | OS                       | Command                                                      |
 | ------------------------ | ------------------------------------------------------------ |
 | **macOS / Linux**        | `chmod +x scripts/setup.sh && ./scripts/setup.sh`            |
-| **Windows (PowerShell)** | `powershell -ExecutionPolicy Bypass -File scripts/setup.ps1` |
+| **Windows (PowerShell)** | `powershell -ExecutionPolicy Bypass -File scripts/setup.ps1` (quote the path if the folder name contains spaces) |
 | **Windows (Git Bash)**   | same as macOS/Linux                                          |
 
 
 What the setup script does:
 
-1. Installs **Poetry** if missing (official installer)
-2. Ensures **Python 3.14.3** (via pyenv if available, otherwise prints install hints)
-3. Runs `**poetry install`**
-4. Verifies all dependencies import correctly
-5. Checks for `data/pokedecks.db` and prints next steps
+1. Ensures **Python 3.14**: on **Windows**, installs it automatically via `winget` if missing. On **macOS / Linux**, uses pyenv when available, otherwise prints manual install hints
+2. Installs **Poetry** if missing (official installer)
+3. Runs `poetry install`
+4. Verifies all core dependencies import correctly
+5. Creates `data/` directories, checks for `data/pokedecks.db`, and prints next steps if absent
 
-#### View the report (after setup + data present)
+**Note**:
+The `data/` directory (database, quality reports, analysis output) is **not in git**. Use a **pre-built snapshot** (GitHub Release or downloaded archive) or run the pipeline locally to acquire data.
+
+#### View the report (after setup + data acquired)
 
 
 | OS            | Analysis report (RQ1–RQ3)                                              | Set completion app (RQ4)                                                   |
@@ -148,7 +140,6 @@ What the setup script does:
 Opens Streamlit at **[http://localhost:8501](http://localhost:8501)** (browser opens automatically).
 
 #### If no database is present
-
 
 | Option                 | Time          | Command                                                           |
 | ---------------------- | ------------- | ----------------------------------------------------------------- |
@@ -173,8 +164,8 @@ Then re-run the setup script for your OS.
 
 ```bash
 poetry run python scripts/tools/query_examples.py          # SQL demo queries
-poetry run python scripts/pipeline/quality.py --date 2026-05-31
-poetry run python scripts/pipeline/analyze.py --date 2026-05-31
+poetry run python scripts/pipeline/quality.py --date YYYY-MM-DD
+poetry run python scripts/pipeline/analyze.py --date YYYY-MM-DD
 ```
 
 ---
@@ -185,16 +176,10 @@ poetry run python scripts/pipeline/analyze.py --date 2026-05-31
 poetry run python scripts/pipeline/run.py [OPTIONS]
 ```
 
-
 | Option            | Default                         | Description                                |
 | ----------------- | ------------------------------- | ------------------------------------------ |
 | `--mode`          | `full`                          | `full`: all cards. `update`: only new sets |
 | `--date`          | `today`                         | Date stamped on records (ISO)              |
-| `--database-url`  | `sqlite:///./data/pokedecks.db` | SQLAlchemy connection URL                  |
-| `--quality-dir`   | `./data/quality`                | Directory for QC report files              |
-| `--analysis-dir`  | `./data/analysis`               | Directory for analysis output              |
-| `--skip-quality`  | off                             | Skip quality check after storing           |
-| `--skip-analysis` | off                             | Skip analysis phase after quality          |
 
 
 ### Expected runtimes
@@ -282,7 +267,7 @@ Table `**card_prices**`, 21 columns (see `config.SCHEMA_COLUMNS`: name → SQLit
 
 Additional columns for analysis: `set_release_date`, `illustrator`, `dex_id`.
 
-Table `**user_collection**` for RQ4: `(username, card_id, snapshot_date)`.
+Table `**user_collection**` for RQ4: `(username, card_id)`. Ownership is snapshot-independent. the Streamlit app uses the selected snapshot only to read `market_price` values.
 
 ---
 
@@ -301,7 +286,7 @@ Written to `data/quality/` after each run (unless `--skip-quality`):
 
 ### Quality improvement (case study)
 
-Trainer kit sets (`tk-*`) often match the quality `suspicious_sets` rule (uniform high prices from sealed-product matching). Analysis exclusions live in `pipeline/6_quality/modules/exclusions.py`; see `excluded_set_ids` in `data/analysis/{date}/analysis_summary.json`.
+Trainer kit sets (`tk-*`) often match the quality `suspicious_sets` rule (uniform high prices from sealed-product matching). Analysis exclusions live in `pipeline/6_quality/modules/exclusions.py`. see `excluded_set_ids` in `data/analysis/{date}/analysis_summary.json`.
 
 ---
 

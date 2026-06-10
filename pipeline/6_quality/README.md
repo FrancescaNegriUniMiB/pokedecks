@@ -47,4 +47,4 @@ Integration metrics (`integration_{date}.json`) are built and exported by `scrip
 | `quality_{date}.log` | Human-readable report (same text echoed to terminal) |
 | `missing_market_price_{date}.csv` | Rows with null `market_price` |
 | `summary_{date}.json` | All aggregate metrics (includes `suspicious_sets` records) |
-| `integration_{date}.json` | Written by `scripts/pipeline/run.py` after enrichment; copied into `summary` when present |
+| `integration_{date}.json` | Written by `scripts/pipeline/run.py` after enrichment. copied into `summary` when present |

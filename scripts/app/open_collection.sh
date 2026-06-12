@@ -9,5 +9,5 @@ if [[ ! -f data/pokedecks.db ]]; then
   exit 1
 fi
 
-echo "Opening set completion app (RQ4) at http://localhost:8501"
-poetry run streamlit run frontend/collection_app.py
+echo "Opening set completion app (RQ4) at http://localhost:8502"
+poetry run streamlit run frontend/collection_app.py --server.port 8502

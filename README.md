@@ -165,7 +165,7 @@ The `data/` directory (database, quality reports, analysis output) is **not in g
 | Windows       | `powershell -ExecutionPolicy Bypass -File scripts/app/open_report.ps1` | `powershell -ExecutionPolicy Bypass -File scripts/app/open_collection.ps1` |
 
 
-Opens Streamlit at **[http://localhost:8501](http://localhost:8501)** (browser opens automatically).
+Opens Streamlit (browser opens automatically): analysis report at **[http://localhost:8501](http://localhost:8501)**, set completion app at **[http://localhost:8502](http://localhost:8502)**.
 
 #### If no database is present
 
@@ -235,7 +235,7 @@ poetry run python scripts/tools/query_examples.py
 poetry run streamlit run frontend/analysis_app.py
 
 # Streamlit: set completion tracker (RQ4)
-poetry run streamlit run frontend/collection_app.py
+poetry run streamlit run frontend/collection_app.py --server.port 8502
 ```
 
 ---

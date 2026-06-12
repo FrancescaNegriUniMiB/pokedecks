@@ -15,5 +15,5 @@ if (-not (Test-Path -LiteralPath "data/pokedecks.db")) {
     exit 1
 }
 
-Write-Host "Opening set completion app at http://localhost:8501"
-& poetry run streamlit run frontend/collection_app.py
+Write-Host "Opening set completion app at http://localhost:8502"
+& poetry run streamlit run frontend/collection_app.py --server.port 8502

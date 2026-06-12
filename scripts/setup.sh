@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# PokeDecks — one-shot setup (macOS, Linux, Git Bash on Windows)
+
+# Before running helper scripts (download_snapshots.sh, open_report.sh, open_collection.sh, …),
+# make them executable once: chmod +x scripts/tools/*.sh scripts/app/*.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -88,7 +90,7 @@ else
 
 Next steps (pick one):
 
-  A) Download pre-built snapshots:
+  A) Download pre-built snapshots (chmod +x scripts/tools/*.sh if needed):
        ./scripts/tools/download_snapshots.sh
 
   B) Full dataset (~1h 15min):
@@ -100,6 +102,9 @@ fi
 cat <<'EOF'
 
 Setup complete.
+
+Helper scripts (open_*.sh, download_snapshots.sh, …) must be executable once:
+  chmod +x scripts/tools/*.sh scripts/app/*.sh
 
 View analysis report (RQ1–RQ3 charts):
   ./scripts/app/open_report.sh

@@ -63,18 +63,23 @@ def _merge_db(target: Path, sources: list[Path]) -> None:
         shutil.copy2(sources[0], target)
         sources = sources[1:]
     conn = sqlite3.connect(target)
-    for src in sources:
-        conn.execute("ATTACH DATABASE ? AS merge_src", (str(src),))
-        conn.execute("INSERT OR IGNORE INTO card_prices SELECT * FROM merge_src.card_prices")
-        try:
+    conn.execute("PRAGMA busy_timeout = 30000")
+    try:
+        for src in sources:
+            conn.execute("ATTACH DATABASE ? AS merge_src", (str(src),))
             conn.execute(
-                "INSERT OR IGNORE INTO user_collection SELECT * FROM merge_src.user_collection"
-            )
-        except sqlite3.OperationalError:
-            pass
-        conn.execute("DETACH DATABASE merge_src")
-    conn.commit()
-    conn.close()
+                "INSERT OR IGNORE INTO card_prices SELECT * FROM merge_src.card_prices"
+            ).close()
+            try:
+                conn.execute(
+                    "INSERT OR IGNORE INTO user_collection SELECT * FROM merge_src.user_collection"
+                ).close()
+            except sqlite3.OperationalError:
+                pass
+            conn.commit()
+            conn.execute("DETACH DATABASE merge_src")
+    finally:
+        conn.close()
 
 
 def _merge_tree(target: Path, sources: list[Path], subdir: str) -> None:

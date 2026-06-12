@@ -34,6 +34,7 @@ Workflow: `.github/workflows/update-snapshot.yml` — scheduled 2026-06-09, 2026
 | `tools/download_snapshots.py` | Download pre-built snapshots from GitHub |
 | `tools/download_snapshots.sh` | macOS / Linux wrapper for `download_snapshots.py` |
 | `tools/download_snapshots.ps1` | Windows wrapper for `download_snapshots.py` |
+| `tools/publish-snapshot.sh` | Publish local `data/` as a GitHub Release (requires `gh`) |
 | `tools/query_examples.py` | SQL demo queries |
 
 Fetches the last 3 GitHub Releases into `data/` (no `gh` required). CI also publishes a release on each successful snapshot run.

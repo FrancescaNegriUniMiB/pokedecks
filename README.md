@@ -81,6 +81,7 @@ pokedecks/
 │       ├── download_snapshots.py
 │       ├── download_snapshots.sh
 │       ├── download_snapshots.ps1
+│       ├── publish-snapshot.sh
 │       └── query_examples.py
 │   └── app/
 │       ├── open_report.sh    # launch analysis Streamlit viewer
@@ -267,7 +268,7 @@ Each successful **Update snapshot** workflow run publishes a release tagged `sna
 To publish manually after a local pipeline run:
 
 ```bash
-./scripts/publish-snapshot.sh snapshot-2026-06-05
+./scripts/tools/publish-snapshot.sh snapshot-2026-06-05
 ```
 
 ### <a id="github-actions-artifact-scheduled-ci"></a>GitHub Actions artifact (scheduled CI)

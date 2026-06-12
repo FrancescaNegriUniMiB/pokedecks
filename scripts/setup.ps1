@@ -126,7 +126,7 @@ if (-not (Test-Path -LiteralPath "data/pokedecks.db")) {
 Next steps (pick one):
 
   A) Download pre-built snapshots:
-       powershell -ExecutionPolicy Bypass -File scripts/download_snapshots.ps1
+       powershell -ExecutionPolicy Bypass -File scripts/tools/download_snapshots.ps1
 
   B) Full dataset (~1h 15min):
        poetry run python scripts/pipeline/run.py --mode full

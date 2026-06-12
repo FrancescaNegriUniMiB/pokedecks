@@ -78,6 +78,9 @@ pokedecks/
 │   │   ├── analyze.py        # analysis-only CLI
 │   │   └── quality.py        # quality-only CLI
 │   └── tools/
+│       ├── download_snapshots.py
+│       ├── download_snapshots.sh
+│       ├── download_snapshots.ps1
 │       └── query_examples.py
 │   └── app/
 │       ├── open_report.sh    # launch analysis Streamlit viewer
@@ -167,7 +170,7 @@ Opens Streamlit at **[http://localhost:8501](http://localhost:8501)** (browser o
 
 | Option                 | Time          | Command                                                           |
 | ---------------------- | ------------- | ----------------------------------------------------------------- |
-| **A — Download snapshots** | instant       | `./scripts/download_snapshots.sh` or `download_snapshots.ps1` on Windows (see section below) |
+| **A — Download snapshots** | instant       | `./scripts/tools/download_snapshots.sh` or `download_snapshots.ps1` on Windows (see section below) |
 | **B — Quick demo**          | not supported | use `--mode update` after a partial run, or a pre-built archive  |
 | **C — Full dataset**   | ~1h 15min     | `poetry run python scripts/pipeline/run.py --mode full`           |
 
@@ -246,8 +249,8 @@ After setup, fetch the latest pre-built data from GitHub (using the public Relea
 
 | OS | Command |
 | --- | --- |
-| macOS / Linux | `./scripts/download_snapshots.sh` |
-| Windows | `powershell -ExecutionPolicy Bypass -File scripts/download_snapshots.ps1` |
+| macOS / Linux | `./scripts/tools/download_snapshots.sh` |
+| Windows | `powershell -ExecutionPolicy Bypass -File scripts/tools/download_snapshots.ps1` |
 
 Defaults: last **3** releases merged into `data/` (`pokedecks.db` + `quality/` + `analysis/`).
 

@@ -11,7 +11,6 @@ fail()  { echo "ERROR: $*" >&2; exit 1; }
 
 info "PokeDecks setup — project root: $ROOT"
 
-# --- Poetry on PATH (installer default) ---
 export PATH="${HOME}/.local/bin:${PATH}"
 
 install_poetry() {
@@ -90,7 +89,7 @@ else
 Next steps (pick one):
 
   A) Download pre-built snapshots:
-       ./scripts/download_snapshots.sh
+       ./scripts/tools/download_snapshots.sh
 
   B) Full dataset (~1h 15min):
        poetry run python scripts/pipeline/run.py --mode full

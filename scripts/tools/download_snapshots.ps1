@@ -1,5 +1,5 @@
 $ErrorActionPreference = "Stop"
-$Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+$Root = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path))
 Set-Location -LiteralPath $Root
 $PoetryExe = Join-Path $env:APPDATA "Python\Scripts\poetry.exe"
 if (-not (Test-Path -LiteralPath $PoetryExe)) { $PoetryExe = "poetry" }

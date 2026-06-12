@@ -2,8 +2,9 @@
   "latex-workshop.latex.tools": [
     {
       "name": "latexmk-poetry",
-      "command": "${workspaceFolder}/scripts/latex/latexmk.sh",
+      "command": "bash",
       "args": [
+        "%DIR%/../../scripts/latex/latexmk.sh",
         "-synctex=1",
         "-interaction=nonstopmode",
         "-file-line-error",
